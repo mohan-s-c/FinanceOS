@@ -1,0 +1,2925 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-density="regular">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>APAR FinanceOS — AP/AR Operations Console</title>
+  <style>
+/* ============================================================
+   FINANCE OS — Colors & Type
+   Design tokens for the Finance OS brand.
+   Brand: cinematic, premium, editorial. Dark-first.
+   ------------------------------------------------------------
+   NOTE ON TYPE: the organization's production typeface is served via
+   their (Squarespace) CSS and could not be extracted. The closest
+   premium grotesque — HANKEN GROTESK — is substituted here and
+   flagged. Replace the @font-face files in /fonts to swap in the
+   real brand font without touching the rest of the system.
+   ============================================================ */
+
+/* ---------- Webfonts ---------- */
+@font-face{font-family:"Hanken Grotesk";font-weight:300;font-style:normal;font-display:swap;src:url("fonts/hanken-300.woff2") format("woff2");}
+@font-face{font-family:"Hanken Grotesk";font-weight:400;font-style:normal;font-display:swap;src:url("fonts/hanken-400.woff2") format("woff2");}
+@font-face{font-family:"Hanken Grotesk";font-weight:500;font-style:normal;font-display:swap;src:url("fonts/hanken-500.woff2") format("woff2");}
+@font-face{font-family:"Hanken Grotesk";font-weight:600;font-style:normal;font-display:swap;src:url("fonts/hanken-600.woff2") format("woff2");}
+@font-face{font-family:"Hanken Grotesk";font-weight:700;font-style:normal;font-display:swap;src:url("fonts/hanken-700.woff2") format("woff2");}
+@font-face{font-family:"Geist Mono";font-weight:400;font-style:normal;font-display:swap;src:url("fonts/geistmono-400.woff2") format("woff2");}
+@font-face{font-family:"Geist Mono";font-weight:500;font-style:normal;font-display:swap;src:url("fonts/geistmono-500.woff2") format("woff2");}
+
+:root{
+  /* ---------- BASE COLOR PALETTE ---------- */
+  /* Ink / dark surfaces (the brand lives in near-black) */
+  --ink-900:#0A0A0B;   /* page background */
+  --ink-800:#101012;   /* raised section */
+  --ink-700:#161618;   /* card / surface */
+  --ink-600:#1F1F22;   /* elevated card, input */
+  --ink-500:#2A2A2E;   /* hover surface */
+  --ink-400:#3A3A40;   /* hairline on dark, disabled */
+
+  /* Light / paper surfaces (warm off-white for light sections) */
+  --paper-0:#FFFFFF;
+  --paper-50:#F6F3EE;  /* warm paper */
+  --paper-100:#ECE7DF; /* warm card */
+
+  /* Neutral text on dark */
+  --white:#FFFFFF;
+  --fg-1:rgba(255,255,255,1);     /* primary text */
+  --fg-2:rgba(255,255,255,0.66);  /* secondary text */
+  --fg-3:rgba(255,255,255,0.42);  /* tertiary / captions */
+  --fg-4:rgba(255,255,255,0.24);  /* faint / placeholder */
+
+  /* Text on paper */
+  --on-paper-1:#0A0A0B;
+  --on-paper-2:rgba(10,10,11,0.62);
+  --on-paper-3:rgba(10,10,11,0.40);
+
+  /* Hairlines & borders */
+  --line:rgba(255,255,255,0.10);
+  --line-strong:rgba(255,255,255,0.18);
+  --line-paper:rgba(10,10,11,0.12);
+
+  /* ---------- SIGNATURE ACCENT ---------- */
+  /* The "Recognition" gradient: warm coral -> electric indigo.
+     Sampled from the brand's capability cards. */
+  --coral:#FF8861;
+  --coral-bright:#FF9A78;
+  --indigo:#5F59FF;
+  --indigo-deep:#4A44E0;
+  --violet:#9A6BF0;    /* gradient midpoint */
+  --grad-recognition:linear-gradient(135deg,#FF8861 0%,#9A6BF0 52%,#5F59FF 100%);
+  --grad-recognition-rev:linear-gradient(135deg,#5F59FF 0%,#9A6BF0 48%,#FF8861 100%);
+  /* Soft radial glow used behind dark hero content */
+  --glow-warm:radial-gradient(60% 60% at 50% 40%,rgba(255,136,97,0.18),transparent 70%);
+
+  /* ---------- SEMANTIC STATUS ---------- */
+  --success:#5BC98C;
+  --warning:#F0B450;
+  --danger:#F26A5A;
+  --info:#5F59FF;
+
+  /* ---------- ELEVATION / SHADOW ---------- */
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.40);
+  --shadow-md:0 8px 24px rgba(0,0,0,0.45);
+  --shadow-lg:0 24px 60px rgba(0,0,0,0.55);
+  --shadow-glow:0 0 0 1px rgba(255,255,255,0.06),0 20px 50px rgba(95,89,255,0.18);
+
+  /* ---------- RADII ---------- */
+  --r-xs:6px;
+  --r-sm:10px;
+  --r-md:16px;   /* default card / button */
+  --r-lg:24px;   /* large cards, the capability tiles */
+  --r-xl:32px;
+  --r-pill:999px;
+
+  /* ---------- SPACING (4px base) ---------- */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px;
+  --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px; --s-10:128px;
+
+  /* ---------- TYPE ---------- */
+  --font-sans:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
+
+  /* Fluid display sizes (the site favours large, light, sentence-case heads) */
+  --t-display:clamp(48px,6.5vw,104px);  /* hero */
+  --t-h1:clamp(36px,4.4vw,68px);
+  --t-h2:clamp(28px,3vw,46px);
+  --t-h3:clamp(22px,2vw,30px);
+  --t-h4:20px;
+  --t-body-lg:19px;
+  --t-body:16px;
+  --t-sm:14px;
+  --t-xs:12.5px;
+  --t-eyebrow:13px;  /* uppercase label */
+}
+
+/* ============================================================
+   SEMANTIC ELEMENT STYLES
+   Use these classes (or copy the rules) for consistent type.
+   ============================================================ */
+.m-display{
+  font-family:var(--font-sans);font-weight:300;font-size:var(--t-display);
+  line-height:0.98;letter-spacing:-0.025em;color:var(--fg-1);text-wrap:balance;
+}
+.m-h1{font-family:var(--font-sans);font-weight:300;font-size:var(--t-h1);line-height:1.04;letter-spacing:-0.02em;color:var(--fg-1);text-wrap:balance;}
+.m-h2{font-family:var(--font-sans);font-weight:400;font-size:var(--t-h2);line-height:1.08;letter-spacing:-0.015em;color:var(--fg-1);text-wrap:balance;}
+.m-h3{font-family:var(--font-sans);font-weight:500;font-size:var(--t-h3);line-height:1.16;letter-spacing:-0.01em;color:var(--fg-1);}
+.m-h4{font-family:var(--font-sans);font-weight:600;font-size:var(--t-h4);line-height:1.25;letter-spacing:-0.005em;color:var(--fg-1);}
+.m-lead{font-family:var(--font-sans);font-weight:400;font-size:var(--t-body-lg);line-height:1.55;color:var(--fg-2);}
+.m-body{font-family:var(--font-sans);font-weight:400;font-size:var(--t-body);line-height:1.6;color:var(--fg-2);}
+.m-small{font-family:var(--font-sans);font-weight:400;font-size:var(--t-sm);line-height:1.5;color:var(--fg-3);}
+.m-eyebrow{
+  font-family:var(--font-mono);font-weight:500;font-size:var(--t-eyebrow);
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--fg-3);
+}
+.m-mono{font-family:var(--font-mono);font-weight:400;font-size:var(--t-sm);letter-spacing:-0.01em;color:var(--fg-2);}
+.m-stat{font-family:var(--font-sans);font-weight:300;font-size:clamp(44px,5vw,80px);line-height:1;letter-spacing:-0.03em;color:var(--fg-1);}
+
+/* Gradient text helper for the signature accent */
+.m-grad-text{
+  background:var(--grad-recognition);-webkit-background-clip:text;
+  background-clip:text;color:transparent;
+}
+
+  </style>
+  <style>
+/* ============================================================
+   FINANCE OS — Console styles
+   Built on the Finance OS design tokens (../colors_and_type.css).
+   Dark-first, cinematic, engineered as a dense data tool.
+   Light ("paper") theme available via [data-theme="light"].
+   ============================================================ */
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  /* console-scoped semantic surfaces, mapped onto brand tokens */
+  --app-bg:var(--ink-900);
+  --surface:var(--ink-800);
+  --surface-2:var(--ink-700);
+  --surface-3:var(--ink-600);
+  --hover:var(--ink-500);
+  --line-1:var(--line);
+  --line-2:var(--line-strong);
+  --tx-1:var(--fg-1);
+  --tx-2:var(--fg-2);
+  --tx-3:var(--fg-3);
+  --tx-4:var(--fg-4);
+
+  --agent:#9A6BF0;        /* AI / agent activity */
+  --agent-bright:#B79BF7;
+  --agent-dim:rgba(154,107,240,0.14);
+  --ok:var(--success);
+  --warn:var(--warning);
+  --bad:var(--danger);
+
+  --accent:var(--indigo);
+  --accent-grad:var(--grad-recognition);
+
+  --row-h:52px;          /* table row height (density-driven) */
+  --pad:24px;            /* section padding (density-driven) */
+  --gap:16px;
+}
+
+/* ---------- Light / paper theme ---------- */
+[data-theme="light"]{
+  --app-bg:#F2EEE7;
+  --surface:#FBF9F5;
+  --surface-2:#FFFFFF;
+  --surface-3:#F6F3EE;
+  --hover:#EDE8E0;
+  --line-1:rgba(10,10,11,0.10);
+  --line-2:rgba(10,10,11,0.16);
+  --tx-1:#16161A;
+  --tx-2:rgba(10,10,11,0.66);
+  --tx-3:rgba(10,10,11,0.46);
+  --tx-4:rgba(10,10,11,0.30);
+  --agent-dim:rgba(106,69,189,0.10);
+  --agent:#6D45C9;
+  --agent-bright:#5A36AE;
+}
+
+/* density */
+[data-density="compact"]{ --row-h:42px; --pad:18px; --gap:12px; }
+[data-density="comfy"]{ --row-h:62px; --pad:32px; --gap:22px; }
+
+html,body{
+  height:100%;
+  font-family:var(--font-sans);
+  background:var(--app-bg);
+  color:var(--tx-1);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+/* When switching theme, freeze transitions so var-driven colors jump cleanly
+   (avoids a Chromium quirk where color transitions from a changed custom
+   property fail to settle). */
+.theme-switching *{transition:none !important;}
+#root{height:100%;}
+.app{display:flex;height:100vh;overflow:hidden;background:var(--app-bg);}
+
+::selection{background:rgba(95,89,255,.32);}
+
+/* scrollbars */
+*::-webkit-scrollbar{width:10px;height:10px;}
+*::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:999px;border:3px solid transparent;background-clip:padding-box;}
+*::-webkit-scrollbar-thumb:hover{background:var(--tx-4);background-clip:padding-box;}
+
+/* ---------- type helpers ---------- */
+.eyebrow{font-family:var(--font-mono);font-weight:500;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx-3);}
+.mono{font-family:var(--font-mono);font-size:12.5px;letter-spacing:-.01em;color:var(--tx-2);}
+.tnum{font-variant-numeric:tabular-nums;}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar{
+  width:248px;flex:0 0 248px;height:100%;
+  background:var(--surface);
+  border-right:1px solid var(--line-1);
+  display:flex;flex-direction:column;
+  transition:width .3s cubic-bezier(.22,.61,.36,1);
+}
+.sidebar.collapsed{width:74px;flex-basis:74px;}
+.sb-brand{display:flex;align-items:center;gap:11px;padding:22px 22px 18px;height:72px;}
+.sb-logo{height:19px;width:auto;flex:0 0 auto;}
+[data-theme="light"] .sb-logo{filter:invert(1);}
+.sb-mark{height:26px;width:26px;border-radius:7px;background:var(--accent-grad);flex:0 0 auto;display:grid;place-items:center;}
+.sb-mark svg{width:15px;height:15px;}
+.sb-os{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-3);margin-top:2px;}
+
+.sb-section{padding:14px 16px 6px;}
+.sb-section .eyebrow{padding-left:10px;font-size:9.5px;color:var(--tx-4);}
+.sidebar.collapsed .sb-section .eyebrow,
+.sidebar.collapsed .sb-label,
+.sidebar.collapsed .sb-brand .sb-text{opacity:0;pointer-events:none;}
+
+.sb-nav{display:flex;flex-direction:column;gap:2px;padding:0 12px;}
+.sb-item{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 12px;border-radius:var(--r-sm);
+  color:var(--tx-2);cursor:pointer;border:1px solid transparent;
+  font-size:14px;font-weight:500;position:relative;
+  transition:background .18s,color .18s;white-space:nowrap;
+}
+.sb-item:hover{background:var(--hover);color:var(--tx-1);}
+.sb-item.active{background:var(--surface-3);color:var(--tx-1);border-color:var(--line-1);}
+.sb-item.active::before{content:"";position:absolute;left:-12px;top:50%;transform:translateY(-50%);width:3px;height:18px;border-radius:0 3px 3px 0;background:var(--accent-grad);}
+.sb-item svg{width:18px;height:18px;flex:0 0 auto;stroke-width:1.6;}
+.sb-badge{margin-left:auto;font-family:var(--font-mono);font-size:10.5px;font-weight:500;padding:1px 7px;border-radius:999px;background:var(--agent-dim);color:var(--agent-bright);}
+.sb-badge.warn{background:rgba(240,180,80,.16);color:var(--warn);}
+
+.sb-foot{margin-top:auto;padding:14px;border-top:1px solid var(--line-1);}
+.sb-user{display:flex;align-items:center;gap:11px;padding:7px 8px;border-radius:var(--r-sm);cursor:pointer;}
+.sb-user:hover{background:var(--hover);}
+.sb-ava{height:32px;width:32px;border-radius:50%;flex:0 0 auto;background:var(--accent-grad);display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff;}
+.sb-uname{font-size:13px;font-weight:600;color:var(--tx-1);line-height:1.2;}
+.sb-urole{font-size:11px;color:var(--tx-3);line-height:1.3;}
+
+/* ============================================================
+   MAIN COLUMN
+   ============================================================ */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;height:100%;}
+
+.topbar{
+  height:72px;flex:0 0 72px;display:flex;align-items:center;gap:18px;
+  padding:0 var(--pad);border-bottom:1px solid var(--line-1);
+  background:color-mix(in srgb,var(--surface) 72%, transparent);
+  backdrop-filter:blur(14px);position:relative;z-index:30;
+}
+.tb-collapse{height:34px;width:34px;border-radius:var(--r-sm);border:1px solid var(--line-1);background:transparent;color:var(--tx-2);display:grid;place-items:center;cursor:pointer;flex:0 0 auto;}
+.tb-collapse:hover{background:var(--hover);color:var(--tx-1);}
+.tb-title{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.tb-title h1{font-size:19px;font-weight:600;letter-spacing:-.01em;color:var(--tx-1);}
+.tb-title .crumb{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.04em;color:var(--tx-3);}
+.tb-search{margin-left:auto;display:flex;align-items:center;gap:9px;background:var(--surface-3);border:1px solid var(--line-1);border-radius:var(--r-pill);padding:9px 16px;width:300px;max-width:32vw;color:var(--tx-3);}
+.tb-search input{flex:1;background:none;border:none;outline:none;color:var(--tx-1);font-family:var(--font-sans);font-size:13.5px;min-width:0;}
+.tb-search input::placeholder{color:var(--tx-4);}
+.tb-search kbd{font-family:var(--font-mono);font-size:10px;border:1px solid var(--line-2);border-radius:5px;padding:1px 5px;color:var(--tx-3);}
+.tb-icon{height:38px;width:38px;border-radius:var(--r-sm);border:1px solid var(--line-1);background:transparent;color:var(--tx-2);display:grid;place-items:center;cursor:pointer;flex:0 0 auto;position:relative;}
+.tb-icon:hover{background:var(--hover);color:var(--tx-1);}
+.tb-icon .dot{position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 2px var(--surface);}
+
+.canvas{flex:1;overflow-y:auto;overflow-x:hidden;}
+.page{padding:var(--pad);max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:var(--gap);}
+.page-wide{max-width:none;}
+
+/* page header within canvas */
+.phead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.phead .eyebrow{margin-bottom:8px;}
+.phead h2{font-weight:300;font-size:30px;letter-spacing:-.02em;color:var(--tx-1);line-height:1.05;}
+.phead p{color:var(--tx-2);font-size:14px;margin-top:7px;max-width:560px;line-height:1.5;}
+
+/* ============================================================
+   CARDS / PANELS
+   ============================================================ */
+.card{background:var(--surface);border:1px solid var(--line-1);border-radius:var(--r-md);}
+.card.raised{box-shadow:var(--shadow-md);}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px;border-bottom:1px solid var(--line-1);}
+.card-h h3{font-size:14px;font-weight:600;color:var(--tx-1);letter-spacing:-.005em;display:flex;align-items:center;gap:9px;}
+.card-h h3 svg{width:16px;height:16px;color:var(--tx-3);stroke-width:1.7;}
+.card-b{padding:18px;}
+.card-link{font-size:12.5px;color:var(--accent);font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+.card-link:hover{color:var(--agent-bright);}
+[data-theme="light"] .card-link{color:#4A44E0;}
+
+.grid{display:grid;gap:var(--gap);}
+
+/* ---------- Metric cards ---------- */
+.metric{background:var(--surface);border:1px solid var(--line-1);border-radius:var(--r-md);padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;transition:border-color .2s;}
+.metric:hover{border-color:var(--line-2);}
+.metric .m-top{display:flex;align-items:center;justify-content:space-between;}
+.metric .m-ico{height:30px;width:30px;border-radius:8px;display:grid;place-items:center;background:var(--surface-3);color:var(--tx-2);}
+.metric .m-ico svg{width:16px;height:16px;stroke-width:1.7;}
+.metric .m-lab{font-size:12px;color:var(--tx-3);font-weight:500;letter-spacing:.005em;}
+.metric > *{position:relative;z-index:1;}
+.metric .m-val{font-weight:300;font-size:34px;letter-spacing:-.03em;line-height:1;color:var(--tx-1);white-space:nowrap;}
+.metric .m-val small{font-size:18px;font-weight:400;color:var(--tx-3);letter-spacing:0;}
+.metric .m-delta{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:11.5px;font-weight:500;}
+.metric .m-delta.up{color:var(--ok);}
+.metric .m-delta.down{color:var(--bad);}
+.metric .m-delta.flat{color:var(--tx-3);}
+.metric .m-delta svg{width:13px;height:13px;}
+.metric .m-foot{font-size:11.5px;color:var(--tx-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.metric .spark{position:absolute;right:0;bottom:0;width:110px;height:40px;opacity:.4;pointer-events:none;z-index:0;}
+
+/* ============================================================
+   PILLS / BADGES / CHIPS
+   ============================================================ */
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 10px 3px 8px;border-radius:999px;white-space:nowrap;letter-spacing:.005em;border:1px solid transparent;}
+.pill .pdot{width:6px;height:6px;border-radius:50%;flex:0 0 auto;}
+.pill.ok{background:rgba(91,201,140,.12);color:var(--ok);}.pill.ok .pdot{background:var(--ok);}
+.pill.warn{background:rgba(240,180,80,.13);color:var(--warn);}.pill.warn .pdot{background:var(--warn);}
+.pill.bad{background:rgba(242,106,90,.13);color:var(--bad);}.pill.bad .pdot{background:var(--bad);}
+.pill.neutral{background:var(--surface-3);color:var(--tx-2);}.pill.neutral .pdot{background:var(--tx-3);}
+.pill.agent{background:var(--agent-dim);color:var(--agent-bright);}.pill.agent .pdot{background:var(--agent);}
+[data-theme="light"] .pill.agent{color:var(--agent);}
+
+/* agent badge */
+.abadge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:.01em;padding:3px 9px 3px 7px;border-radius:999px;background:var(--agent-dim);color:var(--agent-bright);border:1px solid color-mix(in srgb,var(--agent) 26%,transparent);white-space:nowrap;}
+[data-theme="light"] .abadge{color:var(--agent);}
+.abadge svg{width:12px;height:12px;flex:0 0 auto;}
+.abadge.human{background:var(--surface-3);color:var(--tx-2);border-color:var(--line-1);}
+
+/* source / RAG chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:6px 11px 6px 9px;border-radius:var(--r-sm);background:var(--surface-3);border:1px solid var(--line-1);color:var(--tx-2);cursor:pointer;transition:.18s;}
+.chip:hover{border-color:var(--accent);color:var(--tx-1);}
+.chip svg{width:13px;height:13px;color:var(--agent);flex:0 0 auto;}
+.chip .ctype{font-family:var(--font-mono);font-size:10px;color:var(--tx-4);letter-spacing:.04em;}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{font-family:var(--font-sans);font-weight:500;font-size:13.5px;border-radius:var(--r-sm);padding:9px 16px;border:1px solid transparent;cursor:pointer;transition:.2s cubic-bezier(.22,.61,.36,1);display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;line-height:1;}
+.btn svg{width:15px;height:15px;stroke-width:1.8;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:#fff;color:#0A0A0B;}
+.btn-primary:hover{background:#e9e9ea;}
+[data-theme="light"] .btn-primary{background:var(--ink-900);color:#fff;}
+[data-theme="light"] .btn-primary:hover{background:#26262b;}
+.btn-grad{background:var(--accent-grad);color:#fff;}
+.btn-grad:hover{filter:brightness(1.08);}
+.btn-ghost{background:transparent;color:var(--tx-1);border-color:var(--line-2);}
+.btn-ghost:hover{background:var(--hover);}
+.btn-quiet{background:var(--surface-3);color:var(--tx-1);border-color:var(--line-1);}
+.btn-quiet:hover{background:var(--hover);}
+.btn-ok{background:rgba(91,201,140,.14);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 32%,transparent);}
+.btn-ok:hover{background:rgba(91,201,140,.22);}
+.btn-bad{background:rgba(242,106,90,.12);color:var(--bad);border-color:color-mix(in srgb,var(--bad) 30%,transparent);}
+.btn-bad:hover{background:rgba(242,106,90,.2);}
+.btn-sm{padding:6px 12px;font-size:12.5px;border-radius:var(--r-xs);}
+.btn-block{width:100%;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.tbl-wrap{overflow-x:auto;}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+table.tbl th{
+  text-align:left;font-family:var(--font-mono);font-weight:500;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--tx-4);padding:11px 16px;border-bottom:1px solid var(--line-1);
+  white-space:nowrap;position:sticky;top:0;background:var(--surface);z-index:2;
+}
+table.tbl th.num,table.tbl td.num{text-align:right;}
+table.tbl td{padding:0 16px;height:var(--row-h);border-bottom:1px solid var(--line-1);color:var(--tx-2);vertical-align:middle;}
+table.tbl tbody tr{cursor:pointer;transition:background .14s;}
+table.tbl tbody tr:hover{background:var(--hover);}
+table.tbl tbody tr.sel{background:var(--surface-3);box-shadow:inset 3px 0 0 var(--accent);}
+table.tbl tbody tr:last-child td{border-bottom:none;}
+.t-strong{color:var(--tx-1);font-weight:600;}
+.t-mono{font-family:var(--font-mono);font-size:12px;color:var(--tx-1);}
+.t-amt{font-family:var(--font-mono);font-weight:500;color:var(--tx-1);font-variant-numeric:tabular-nums;}
+.t-sub{font-size:11px;color:var(--tx-3);}
+.t-vendor{display:flex;align-items:center;gap:10px;}
+.t-logo{height:26px;width:26px;border-radius:7px;flex:0 0 auto;display:grid;place-items:center;font-family:var(--font-mono);font-size:10.5px;font-weight:600;background:var(--surface-3);color:var(--tx-2);border:1px solid var(--line-1);}
+
+/* ============================================================
+   CONFIDENCE INDICATOR
+   ============================================================ */
+.conf{display:inline-flex;align-items:center;gap:9px;}
+.conf-ring{position:relative;flex:0 0 auto;}
+.conf-ring svg{transform:rotate(-90deg);display:block;}
+.conf-ring .cv{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-mono);font-weight:600;letter-spacing:-.02em;}
+.conf-bar{height:6px;border-radius:999px;background:var(--surface-3);overflow:hidden;position:relative;}
+.conf-bar > i{position:absolute;left:0;top:0;height:100%;border-radius:999px;display:block;}
+.conf-meta{font-family:var(--font-mono);font-size:11px;color:var(--tx-3);}
+
+/* ============================================================
+   DETAIL DRAWER
+   ============================================================ */
+.drawer-scrim{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s;z-index:40;}
+.drawer-scrim.open{opacity:1;pointer-events:auto;}
+.drawer{
+  position:absolute;top:0;right:0;height:100%;width:min(560px,82vw);
+  background:var(--surface);border-left:1px solid var(--line-2);
+  box-shadow:var(--shadow-lg);transform:translateX(100%);
+  transition:transform .34s cubic-bezier(.22,.61,.36,1);z-index:41;
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:translateX(0);}
+.drawer-h{flex:0 0 auto;padding:18px 22px;border-bottom:1px solid var(--line-1);display:flex;align-items:flex-start;gap:14px;}
+.drawer-h .x{margin-left:auto;height:32px;width:32px;border-radius:var(--r-sm);border:1px solid var(--line-1);background:transparent;color:var(--tx-2);cursor:pointer;display:grid;place-items:center;flex:0 0 auto;}
+.drawer-h .x:hover{background:var(--hover);color:var(--tx-1);}
+.drawer-b{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:20px;}
+.drawer-f{flex:0 0 auto;padding:16px 22px;border-top:1px solid var(--line-1);background:var(--surface-2);display:flex;flex-direction:column;gap:12px;}
+
+.dsec{display:flex;flex-direction:column;gap:11px;}
+.dsec > .eyebrow{color:var(--tx-3);}
+
+/* mini definition rows */
+.drow{display:flex;align-items:baseline;justify-content:space-between;gap:14px;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line-1);}
+.drow:last-child{border-bottom:none;}
+.drow .k{color:var(--tx-3);}
+.drow .v{color:var(--tx-1);font-weight:500;text-align:right;}
+
+/* 3-way match */
+.match{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:1px;background:var(--line-1);border:1px solid var(--line-1);border-radius:var(--r-sm);overflow:hidden;}
+.match .mc{background:var(--surface);padding:11px 12px;display:flex;flex-direction:column;gap:6px;}
+.match .mc .mh{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-4);}
+.match .mc .mv{font-size:13px;color:var(--tx-1);font-weight:500;font-variant-numeric:tabular-nums;}
+.match .mc.mismatch{background:rgba(242,106,90,.08);}
+.match .mc.mismatch .mv{color:var(--bad);}
+.match-row{display:contents;}
+
+/* reasoning callout */
+.reason{background:var(--agent-dim);border:1px solid color-mix(in srgb,var(--agent) 24%,transparent);border-radius:var(--r-sm);padding:14px 15px;display:flex;flex-direction:column;gap:9px;}
+.reason .rh{display:flex;align-items:center;gap:8px;}
+.reason p{font-size:13px;line-height:1.55;color:var(--tx-1);}
+.reason .rq{color:var(--tx-2);}
+
+.audit-note{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--tx-3);font-family:var(--font-mono);letter-spacing:.01em;}
+.audit-note svg{width:13px;height:13px;color:var(--ok);flex:0 0 auto;}
+
+/* line-item table inside drawer */
+.li{width:100%;border-collapse:collapse;font-size:12.5px;}
+.li th{text-align:left;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-4);padding:6px 0;border-bottom:1px solid var(--line-1);}
+.li th.num,.li td.num{text-align:right;font-variant-numeric:tabular-nums;}
+.li td{padding:8px 0;border-bottom:1px solid var(--line-1);color:var(--tx-2);}
+.li tr:last-child td{border-bottom:none;}
+.li .flag{color:var(--bad);}
+
+/* ============================================================
+   FEED
+   ============================================================ */
+.feed{display:flex;flex-direction:column;}
+.feed-item{display:flex;gap:13px;padding:13px 0;border-bottom:1px solid var(--line-1);}
+.feed-item:last-child{border-bottom:none;}
+.feed-ico{height:30px;width:30px;border-radius:8px;flex:0 0 auto;display:grid;place-items:center;margin-top:1px;}
+.feed-ico svg{width:15px;height:15px;stroke-width:1.8;}
+.fi-agent{background:var(--agent-dim);color:var(--agent-bright);}
+.fi-ok{background:rgba(91,201,140,.12);color:var(--ok);}
+.fi-warn{background:rgba(240,180,80,.13);color:var(--warn);}
+.fi-bad{background:rgba(242,106,90,.12);color:var(--bad);}
+.feed-body{flex:1;min-width:0;}
+.feed-body p{font-size:13px;line-height:1.5;color:var(--tx-1);}
+.feed-body p b{font-weight:600;}
+.feed-body .amt{font-family:var(--font-mono);font-weight:500;}
+.feed-meta{display:flex;align-items:center;gap:10px;margin-top:5px;}
+.feed-time{font-family:var(--font-mono);font-size:10.5px;color:var(--tx-4);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(91,201,140,.6);animation:pulse 2.4s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(91,201,140,.5);}70%{box-shadow:0 0 0 7px rgba(91,201,140,0);}100%{box-shadow:0 0 0 0 rgba(91,201,140,0);}}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line-1);}
+.tab{padding:11px 16px;font-size:13.5px;font-weight:500;color:var(--tx-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.18s;display:flex;align-items:center;gap:8px;}
+.tab:hover{color:var(--tx-1);}
+.tab.active{color:var(--tx-1);border-bottom-color:var(--accent);}
+.tab .tcount{font-family:var(--font-mono);font-size:10.5px;padding:1px 6px;border-radius:999px;background:var(--surface-3);color:var(--tx-3);}
+
+/* ============================================================
+   BANNERS / ALERTS
+   ============================================================ */
+.banner{display:flex;align-items:center;gap:14px;padding:15px 18px;border-radius:var(--r-md);border:1px solid transparent;}
+.banner svg{flex:0 0 auto;}
+.banner .bt{flex:1;}
+.banner .bt h4{font-size:14px;font-weight:600;color:var(--tx-1);}
+.banner .bt p{font-size:12.5px;color:var(--tx-2);margin-top:2px;}
+.banner.warn{background:rgba(240,180,80,.09);border-color:color-mix(in srgb,var(--warn) 30%,transparent);}
+.banner.warn svg{color:var(--warn);}
+.banner.bad{background:rgba(242,106,90,.08);border-color:color-mix(in srgb,var(--bad) 28%,transparent);}
+.banner.bad svg{color:var(--bad);}
+
+/* alert cards (anomalies) */
+.alert{background:var(--surface);border:1px solid var(--line-1);border-radius:var(--r-md);padding:18px;display:flex;flex-direction:column;gap:13px;border-left:3px solid var(--line-2);}
+.alert.sev-high{border-left-color:var(--bad);}
+.alert.sev-med{border-left-color:var(--warn);}
+.alert.sev-low{border-left-color:var(--accent);}
+.alert-top{display:flex;align-items:flex-start;gap:12px;}
+.alert-ico{height:38px;width:38px;border-radius:10px;flex:0 0 auto;display:grid;place-items:center;background:var(--surface-3);}
+.alert-ico svg{width:19px;height:19px;}
+.alert h4{font-size:15px;font-weight:600;color:var(--tx-1);}
+.alert .asub{font-size:12.5px;color:var(--tx-2);margin-top:3px;line-height:1.5;}
+.alert-risk{margin-left:auto;text-align:right;flex:0 0 auto;}
+.alert-risk .ar-val{font-family:var(--font-mono);font-weight:600;font-size:18px;color:var(--bad);letter-spacing:-.02em;}
+.alert-risk .ar-lab{font-size:10px;color:var(--tx-4);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;}
+.alert-foot{display:flex;align-items:center;gap:10px;padding-top:3px;}
+
+/* ============================================================
+   SLIDERS (threshold controls)
+   ============================================================ */
+.thresh{display:flex;flex-direction:column;gap:6px;padding:16px 0;border-bottom:1px solid var(--line-1);}
+.thresh:last-child{border-bottom:none;}
+.thresh-top{display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.thresh-top .tl{display:flex;align-items:center;gap:10px;}
+.thresh-name{font-size:13.5px;font-weight:600;color:var(--tx-1);}
+.thresh-val{font-family:var(--font-mono);font-weight:600;font-size:15px;color:var(--accent);}
+[data-theme="light"] .thresh-val{color:#4A44E0;}
+.thresh-track{position:relative;height:30px;display:flex;align-items:center;cursor:pointer;}
+.thresh-rail{position:absolute;left:0;right:0;height:6px;border-radius:999px;background:var(--surface-3);overflow:hidden;}
+.thresh-rail > i{position:absolute;left:0;top:0;height:100%;background:var(--accent-grad);border-radius:999px;}
+.thresh-knob{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--accent);transform:translate(-50%,-50%);box-shadow:var(--shadow-sm);}
+.thresh-zones{display:flex;justify-content:space-between;font-size:10.5px;color:var(--tx-4);font-family:var(--font-mono);margin-top:2px;}
+.thresh-note{font-size:11.5px;color:var(--tx-3);display:flex;align-items:center;gap:7px;}
+
+/* ============================================================
+   CHARTS (hand-built)
+   ============================================================ */
+.chart{width:100%;display:block;overflow:visible;}
+.legend{display:flex;gap:18px;flex-wrap:wrap;}
+.legend .lg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx-2);}
+.legend .lg i{width:10px;height:10px;border-radius:3px;flex:0 0 auto;}
+.legend .lg.line i{height:3px;width:16px;border-radius:2px;}
+
+.donut-wrap{display:flex;align-items:center;gap:24px;}
+.donut-center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;}
+.donut-center .dc-val{font-weight:300;font-size:26px;letter-spacing:-.02em;color:var(--tx-1);line-height:1;}
+.donut-center .dc-lab{font-size:10.5px;color:var(--tx-3);font-family:var(--font-mono);margin-top:3px;}
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+.toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none;}
+.toast{display:flex;align-items:center;gap:12px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:var(--r-md);padding:13px 18px;box-shadow:var(--shadow-lg);min-width:300px;max-width:440px;animation:toastin .3s cubic-bezier(.22,.61,.36,1);}
+[data-theme="dark"] .toast{background:#1b1b1f;}
+.toast .ti{height:30px;width:30px;border-radius:8px;flex:0 0 auto;display:grid;place-items:center;}
+.toast .tx h5{font-size:13.5px;font-weight:600;color:var(--tx-1);}
+.toast .tx p{font-size:11.5px;color:var(--tx-3);margin-top:1px;}
+@keyframes toastin{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* utility */
+.spread{display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.vstack{display:flex;flex-direction:column;}
+.hstack{display:flex;align-items:center;}
+.muted{color:var(--tx-3);}
+.divider{height:1px;background:var(--line-1);border:none;width:100%;}
+.empty{padding:48px 20px;text-align:center;color:var(--tx-3);font-size:13.5px;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.empty svg{width:34px;height:34px;color:var(--tx-4);}
+
+/* responsive */
+@media (max-width:1100px){
+  .tb-search{width:200px;}
+}
+@media (max-width:820px){
+  .sidebar{position:absolute;z-index:60;height:100%;box-shadow:var(--shadow-lg);}
+}
+
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script>
+window.METRO_LOGO = "data:image/webp;base64,UklGRqIKAABXRUJQVlA4WAoAAAAYAAAAPAIAXQAAVlA4TMEJAAAvPEIXEKegoG0bxvxJtzsg5n/+CbJt8UfwEkzSVNsxWAYAgCPA0XsAAIC327bztrVtDQDBgKL4ApL6/z/WEsfovYOZMtdrRP9lQbZbt83hRfpuARCiKYri9DsoWwotWwx3v817S6V9vvv2ejVU2l+v+e7bWw3tR/fePtXMPnTn7axGdtJ9N0stzGhrvOlmS29m2+634o95ktutV9xeL19i83W7DZHUEN1swyQ0TLfaUMkM1Y02XCK7MZrruXVGnTzWupaLGSOJ3RlZRZFPPE/1lK9knATG6X7wtKr4OsaKNlZ3g/IyOOJVjBdlCqdvBnaRDRcxReFR9qXU5XOLX4b4MlmvYZLC6wj7VqrWjOTLkG2qErzsRO3oYKdVuhEkhyuYTqDTOt0HwmEyXcAaqvuJX6n7wGiS2ptWgGl1G4i7wdje1HJNrRuAW21Te9PLMb3uAiEMb19qbm8tZFoL3QZCiD8l0N7ayLA2ug+EK1grnayVfvlcy9rpw9rpd8+lrKHGH/urlVKKhEeysGLKOad4FSKRiJi6nDs81ZyvUetofjt6HVL30SUN7PDdIUub9nHbr6BYzi1/kh/bZ4bq4Pkfh3k/xbuWSMaSn9txTnQdOr9LToFu1vLvOfb4pi+OGyE/988ISvLIw2pkfptLgsjnGM5eRcvXoz6zgvyoVg6ffdTQW9EC3Wx3yZjF1lWXpNSeXGq6gtLLeW/ay8tsBZCrF9qDiC0/Dz8PXt9lJrXZGwnf7qaKbqyID+BToRaAxXCqfGbPT8lM9lH3BIKbs4LqRWt2HtAlQwKMqSYf8FE/7rRPINSMAd9h8ERiy+j3KpiI0o7OyWwxX9pE4+NIYE6Y76SKBtdLEYRxPISGoNOWAgKjRjzAMsJT8wf6e57MDLARyRsi0omBmIvWRPAHdnYvGOdeQOtcC5+rPakMQqYtBghKTRiwCzJ9bskTifvsP/omuIHMp0ujcjc5BebB+PrAOoSrhj034ME9C9MYxoc0hsGpAQkdQph8H15s/LrGnxa4H4q96P75AQIWOnNOTkcHN8gwjZPCQD6lMBBSema4kBKRjsqbW3N6ejeVsrWXh42qPf3uEKzRDDKMXJNKvKFotMWAwkpNxSuzUkUm7ucjyXETOuvW7QYfrau64HotQBzy8QdGoi0GGFadmFPNHVtFcmC5RHwTd8fF6WNZoOsX251NBZTC+r657oBzlY61vBf5Yh691GeGfcwfGSmuS04nYTlMefLcSUqKs/KcT13iZIocfXAU2mKAEaxmSXBDyZ9JhgKZMZeiwdPpl2gFNvrjSsyfbbPcMV7fwFg/3ekmv/tf0+dSIZKPPZ6hZthpwT/6H04O8eCqkgrmKi2yO3YCgbYYCARSAH9ojExvT5ijyfmgxudgR6QfiyDs2fscA1a4wFSNKFNkPhVLkOQw2oEMQsyE4KmKYcBnPQy8thgYeI1q7LvriZm4LdDtUfVenMU16tkTd5AkoSOeALqB0I4Ft0UyOBnZchV+rrhPyR4onOxS2EKNwhZoCjw38blTdlw6gJ7O5A3CYHWaHi+IBK1PoBfaCDFBaT+Q3Cb2ZqeawcnoiTeAsvn00pITOIk9lGDG4QgyMbtbac76CzHKA4NEYp93S2ACLsjoDF9oR/wEmYAR2a3Itz0WnFXnm4xieuq2dcpmOkbkTp2EVI2BxBNgaga3c+xbIMLZ5Ps4B7I0JjXJLX78CkMG3gKAPv2oyKefm0Pqp7Lui26zyOgbC6clBBZXrolghqoNrBCwm3rmBSm3qDcxlUhS4fcmzT47vPnAL6jsXKvsN5MA5AOYlmc0vhzj8eWYnB1IAXPlry4z8FovcQFELcX9sV+B3KzOp8CumiXoTtg2QWFtsj92OHtJWNn1LScspglgNAY9lUnfwCQnuzX5zGCz0t1pSfi1MuP730yfXRKCW6SrG/YYBINk5AGnQds65EjIGhsFIDJMAaGxySY0hgK45PJStiLlIMbNXrEVtXjswYAdRg9yXuS61qnI2OJffZaO0Z6CAkgnk4BrDBcj03RSBimVyHuH4VXp6LEqMv9yx8yIs1lFKXumNuFPmtaCak+hEWH5MA2wxvC3kaWMCrAFIV09TV4eFzcGtjeTu5AouTJ4oNU6xQ7c8T2fb0ZYfkwEqjH8dfSXZWDGJpwBZyQ4YHaCSYm3P0C3hXJIoSGhhIaEVMLfR7kshbgjJSg4A4FVTp1DldyJTTpCXKTbmEJoSmhKCF+ETGxb+TvYJIwq8C0SVqf/hpF019jiB68GP1ik2C0vB3H/8q0BO5rqAikds3ikmAZNxAIrM/1nhlV8NijB+4lxBf/aI35n3KEoXotETKmzrJ4WtpPcW1TiymDWufR87sIbVmDnxvid8avpcgju/9i6XhTj10A85CiCvnp1WvyXtJ0arN8Zf0no2kxWymVPLJaX4HKq7vrlKshhMa8ELZF8J+0741bTcW16wcfybA5fLpNsL8wgmP+sVplLyU9o31z99gD7KS5NPOCpCbQEOJ3gS/BhPmsBdlbxZV50xMcOxtF9e/wpzoaG1xD8WW0UVeDCT4UTsq+tEnsekd2aImKuRKHsvwJGdpU27Y/2+CPryo5FG7QHo2MrcEJ2xD4hir2kCEM8sP2lENFTO8zHkY8r4B318OBGr1eB2BM2RAJRxsPMIRlcVsAPoa8vD7LX4fgD3sw8GHoh+WVK8v7O8vJE2QxuQf1DBbcGFRkKDhhd969OPIhy6k8uPQhmIaESx/Pk/WXRg7z2wpxilMwBmsjhYKc3yQjE/zyks8KYvzphQA6wsyapoKq9l+ajJQXpQA/Vy06HTsRLVDXD5+GN9rhK5NDzVEdxwohW5KY/+VuDbtLbnmMpz/VdGLAqctiHAv9l4PoT3jB+hgdNaRZs0+A4lPG5uWOhl1couKcbXA3Sd+SBMH4ir17cX56gOBprclgaEUbJIcYNjnbx1w0XSXAidMfe5K9P5LUEhyIBlKKcKGQnUSyK4KSEjtYYvjWmVvr7HvFQoJLmLIhxJw1oE3+sqZjQk1rCt0ZXTseATJuaEfqdYY0BpKSdLHMkK1SZTTHo0GyensLvgJAqfbSuV+NqvPOgiLOZYYjdy1PUB/eTbB2SMI4+fHHcVt7fAW/MMQlQfMc9PYzgY/cykRLmJHTsfHsl3hUN50rHsntNjOvzeg2MKIAxezBcypRLUCjT5g0QU2bCLtVMZHa7JpEZcy+PY36HRxJC7+1e3r2KUeTwwHJYzV5wM9f7YexeGLXE8PtoqR/nWretzu9DKC/cYh7m+tPe4XXoGIGMPaavSZZDnaP6MLpwH5qAf6T2f//5v//8m5sAAEVYSUa6AAAARXhpZgAASUkqAAgAAAAGABIBAwABAAAAAQAAABoBBQABAAAAVgAAABsBBQABAAAAXgAAACgBAwABAAAAAgAAABMCAwABAAAAAQAAAGmHBAABAAAAZgAAAAAAAAAvGQEA6AMAAC8ZAQDoAwAABgAAkAcABAAAADAyMTABkQcABAAAAAECAwAAoAcABAAAADAxMDABoAMAAQAAAP//AAACoAQAAQAAAD0CAAADoAQAAQAAAF4AAAAAAAAA";
+
+  </script>
+  <script>
+/* Finance OS — mock data layer.
+   Realistic finance data so the prototype feels like a live tool. */
+(function () {
+  const DATA = {};
+
+  DATA.user = { name: "Dana Okafor", role: "AP/AR Analyst", initials: "DO" };
+
+  // ---- Dashboard metrics ----
+  DATA.metrics = [
+    { id: "touchless", label: "Touchless Rate", value: "82", suffix: "%", delta: "+4.1 pts", dir: "up", foot: "vs. last month", tone: "ok", spark: [62,64,68,67,71,74,73,78,80,82], icon: "zap" },
+    { id: "exceptions", label: "Open Exceptions", value: "47", delta: "+11 today", dir: "down", foot: "awaiting human review", tone: "warn", spark: [22,28,25,30,33,29,38,41,44,47], icon: "alert" },
+    { id: "close", label: "Close Cycle", value: "1.2", suffix: " days", delta: "−4.3 days", dir: "up", foot: "from 5.5-day baseline", tone: "ok", spark: [5.5,5.1,4.4,3.8,3.1,2.6,2.0,1.7,1.4,1.2], icon: "calendar" },
+    { id: "cash", label: "Cash Position", value: "$48.2", suffix: "M", delta: "+$2.1M", dir: "up", foot: "across all accounts", tone: "flat", spark: [44,45,44,46,47,46,47,48,48,48.2], icon: "wallet" },
+    { id: "leakage", label: "Leakage Recovered", value: "$1.3", suffix: "M", delta: "MTD", dir: "flat", foot: "by Anomaly Detection", tone: "ok", spark: [0.1,0.3,0.4,0.6,0.7,0.85,1.0,1.1,1.2,1.3], icon: "shield" },
+  ];
+
+  DATA.apHealth = {
+    processedToday: "1,284",
+    autoApproved: "1,042",
+    inReview: "47",
+    avgTime: "3.2 hrs",
+    touchless: 81,
+  };
+  DATA.arHealth = {
+    paymentsApplied: "$3.1M",
+    autoApplied: "94",
+    overdue: "212",
+    dso: "28.4",
+  };
+
+  // ---- Agent activity feed ----
+  DATA.feed = [
+    { id:1, type:"ok", agent:"PO Matching Agent", action:"Auto-approved", html:"Auto-approved invoice <b class='t-mono'>#INV-44821</b> — 3-way match clean", amt:"$4,200", time:"just now", live:true },
+    { id:2, type:"bad", agent:"Anomaly Detection Agent", action:"Flagged", html:"Flagged a <b>duplicate invoice</b> from Acme Janitorial Services", amt:"$3,180", time:"2 min ago" },
+    { id:3, type:"ok", agent:"Cash Application Agent", action:"Matched", html:"Matched deposit to <b>14 open invoices</b> — auto-applied", amt:"$182,400", time:"6 min ago" },
+    { id:4, type:"agent", agent:"Collections Agent", action:"Outreach", html:"Sent payment reminders to <b>38 overdue tenants</b>", amt:null, time:"14 min ago" },
+    { id:5, type:"warn", agent:"Exception Agent", action:"Escalated", html:"Escalated <b class='t-mono'>#INV-44903</b> — price variance exceeds tolerance", amt:"$8,420", time:"22 min ago" },
+    { id:6, type:"ok", agent:"Revenue Classification Agent", action:"Classified", html:"Classified <b>62 revenue lines</b> under ASC 606 — no exceptions", amt:null, time:"31 min ago" },
+    { id:7, type:"agent", agent:"Cash Flow Forecast Agent", action:"Forecast", html:"Updated 30-day forecast — projected net inflow <b>+$6.4M</b>", amt:null, time:"44 min ago" },
+    { id:8, type:"ok", agent:"Payment Agent", action:"Scheduled", html:"Scheduled <b>214 approved payments</b> for Friday run", amt:"$1.94M", time:"1 hr ago" },
+  ];
+
+  // ---- Cash flow forecast (30 days, weekly points) ----
+  DATA.forecast = {
+    labels: ["Now","+5d","+10d","+15d","+20d","+25d","+30d"],
+    inflow: [2.1, 3.4, 2.8, 4.1, 3.6, 4.8, 5.2],
+    outflow: [1.8, 2.2, 3.1, 2.4, 3.8, 2.9, 3.4],
+  };
+
+  // ---- AP Exception Queue ----
+  DATA.exceptions = [
+    {
+      id:"INV-44903", vendor:"Sparkle Facilities", vinit:"SF", amount:8420, amountStr:"$8,420.00",
+      location:"SFO-Terminal-2", reason:"Price variance vs PO (+12%)", confidence:61, tone:"warn",
+      agent:"Exception Agent", status:"Needs Review", date:"May 28, 2026", po:"PO-3391", terms:"Net 30",
+      lineItems:[
+        {desc:"Janitorial service — May (Terminal 2)", qty:1, unit:"$7,520.00", total:"$7,520.00", flag:false},
+        {desc:"After-hours deep clean — surcharge", qty:1, unit:"$900.00", total:"$900.00", flag:true},
+      ],
+      match:{ po:{rate:"$7,520.00", label:"Contracted rate"}, gr:{rate:"Received", label:"Goods receipt"}, inv:{rate:"$8,420.00", label:"Invoiced", mismatch:true} },
+      reasoning:"Invoiced amount is 12% above the contracted rate in PO #PO-3391. Contract #C-2024-0142 allows a 5% variance ceiling; the after-hours surcharge line is not covered by the rate schedule.",
+      sources:[ {type:"Contract", ref:"C-2024-0142", note:"rate schedule"}, {type:"PO", ref:"PO-3391", note:"Terminal-2 janitorial"} ],
+    },
+    {
+      id:"INV-44871", vendor:"SecureGuard Inc", vinit:"SG", amount:15200, amountStr:"$15,200.00",
+      location:"Multiple", reason:"Missing PO reference", confidence:48, tone:"bad",
+      agent:"Exception Agent", status:"Needs Review", date:"May 28, 2026", po:"—", terms:"Net 45",
+      lineItems:[
+        {desc:"Security staffing — 4 locations (May)", qty:4, unit:"$3,200.00", total:"$12,800.00", flag:false},
+        {desc:"Equipment rental — monitoring", qty:1, unit:"$2,400.00", total:"$2,400.00", flag:true},
+      ],
+      match:{ po:{rate:"Not found", label:"PO reference", mismatch:true}, gr:{rate:"Partial", label:"Goods receipt"}, inv:{rate:"$15,200.00", label:"Invoiced"} },
+      reasoning:"No purchase-order reference could be matched to this invoice. Vendor SecureGuard Inc has 3 active POs, but none match the line items or amount. Policy requires a PO for invoices above $10,000.",
+      sources:[ {type:"Policy", ref:"AP-POL-07", note:"PO threshold $10k"}, {type:"Vendor", ref:"V-2207", note:"SecureGuard Inc"} ],
+    },
+    {
+      id:"INV-44850", vendor:"Metro Maintenance Co", vinit:"MM", amount:2100, amountStr:"$2,100.00",
+      location:"DEN-Lot-A", reason:"Possible duplicate", confidence:55, tone:"warn",
+      agent:"Anomaly Agent", status:"Needs Review", date:"May 27, 2026", po:"PO-3288", terms:"Net 30",
+      lineItems:[
+        {desc:"HVAC preventive maintenance — DEN Lot A", qty:1, unit:"$2,100.00", total:"$2,100.00", flag:true},
+      ],
+      match:{ po:{rate:"$2,100.00", label:"Contracted"}, gr:{rate:"Received", label:"Goods receipt"}, inv:{rate:"$2,100.00", label:"Invoiced", mismatch:true} },
+      reasoning:"This invoice closely matches #INV-44612 (same vendor, amount, and service period) paid on May 12, 2026. 94% field similarity suggests a possible duplicate submission.",
+      sources:[ {type:"Invoice", ref:"INV-44612", note:"prior payment"}, {type:"PO", ref:"PO-3288", note:"DEN-Lot-A HVAC"} ],
+    },
+    {
+      id:"INV-44912", vendor:"Brightline Electric", vinit:"BE", amount:24680, amountStr:"$24,680.00",
+      location:"LAX-Structure-3", reason:"Amount exceeds approval limit", confidence:72, tone:"warn",
+      agent:"Exception Agent", status:"Needs Review", date:"May 29, 2026", po:"PO-3404", terms:"Net 30",
+      lineItems:[
+        {desc:"EV charger install — 12 stalls", qty:12, unit:"$1,840.00", total:"$22,080.00", flag:false},
+        {desc:"Permit & inspection fees", qty:1, unit:"$2,600.00", total:"$2,600.00", flag:false},
+      ],
+      match:{ po:{rate:"$24,680.00", label:"Contracted"}, gr:{rate:"Received", label:"Goods receipt"}, inv:{rate:"$24,680.00", label:"Invoiced"} },
+      reasoning:"3-way match is clean, but the total exceeds the $20,000 auto-approval limit for capital projects. Routed for human sign-off per policy AP-POL-11.",
+      sources:[ {type:"Policy", ref:"AP-POL-11", note:"capex sign-off $20k"}, {type:"PO", ref:"PO-3404", note:"LAX EV install"} ],
+    },
+    {
+      id:"INV-44888", vendor:"Acme Janitorial", vinit:"AJ", amount:3180, amountStr:"$3,180.00",
+      location:"ORD-Garage-B", reason:"Duplicate of #INV-44602", confidence:41, tone:"bad",
+      agent:"Anomaly Agent", status:"Needs Review", date:"May 28, 2026", po:"PO-3120", terms:"Net 30",
+      lineItems:[
+        {desc:"Daily porter service — May (Garage B)", qty:1, unit:"$3,180.00", total:"$3,180.00", flag:true},
+      ],
+      match:{ po:{rate:"$3,180.00", label:"Contracted"}, gr:{rate:"Received", label:"Goods receipt"}, inv:{rate:"$3,180.00", label:"Invoiced", mismatch:true} },
+      reasoning:"Near-identical to invoice #INV-44602 already paid this period (98% similarity on vendor, amount, service window). High-confidence duplicate — recommend reject.",
+      sources:[ {type:"Invoice", ref:"INV-44602", note:"paid May 9"}, {type:"Vendor", ref:"V-1180", note:"Acme Janitorial"} ],
+    },
+    {
+      id:"INV-44929", vendor:"Pacific Signage", vinit:"PS", amount:6740, amountStr:"$6,740.00",
+      location:"SEA-Lot-C", reason:"Tax jurisdiction mismatch", confidence:67, tone:"warn",
+      agent:"Exception Agent", status:"Needs Review", date:"May 29, 2026", po:"PO-3399", terms:"Net 30",
+      lineItems:[
+        {desc:"Wayfinding signage refresh — SEA Lot C", qty:1, unit:"$6,200.00", total:"$6,200.00", flag:false},
+        {desc:"Sales tax (10.25% — applied)", qty:1, unit:"$540.00", total:"$540.00", flag:true},
+      ],
+      match:{ po:{rate:"$6,200.00", label:"Pre-tax"}, gr:{rate:"Received", label:"Goods receipt"}, inv:{rate:"$6,740.00", label:"Invoiced", mismatch:true} },
+      reasoning:"Tax rate applied (10.25%) corresponds to Seattle, but the ship-to location maps to a tax-exempt municipal lease. Expected tax is $0.00.",
+      sources:[ {type:"Lease", ref:"L-SEA-0033", note:"tax-exempt"}, {type:"PO", ref:"PO-3399", note:"SEA signage"} ],
+    },
+  ];
+
+  // ---- AR Cash Application ----
+  DATA.unappliedTotal = "$340,200";
+  DATA.unappliedCount = 6;
+  DATA.deposits = [
+    { id:"DEP-90412", amount:"$182,400", payer:"JPMorgan ACH batch", invoices:"14 invoices", confidence:97, status:"Auto-applied", tone:"ok", agent:true },
+    { id:"DEP-90418", amount:"$96,200", payer:"Wells Fargo wire", invoices:"3 invoices", confidence:93, status:"Auto-applied", tone:"ok", agent:true },
+    { id:"DEP-90421", amount:"$54,800", payer:"Lockbox #2241", invoices:"Suggested: 5", confidence:64, status:"Needs Review", tone:"warn", agent:false },
+    { id:"DEP-90427", amount:"$41,300", payer:"Stripe payout", invoices:"8 invoices", confidence:91, status:"Auto-applied", tone:"ok", agent:true },
+    { id:"DEP-90433", amount:"$22,150", payer:"Check #88142", invoices:"Suggested: 2", confidence:52, status:"Needs Review", tone:"warn", agent:false },
+    { id:"DEP-90440", amount:"$18,900", payer:"ACH — unidentified", invoices:"No match", confidence:31, status:"Unmatched", tone:"bad", agent:false },
+  ];
+  DATA.suggestedMatches = [
+    { inv:"INV-AR-7741", customer:"Hertz Corporate Mobility", amount:"$24,600", confidence:88 },
+    { inv:"INV-AR-7726", customer:"Hertz Corporate Mobility", amount:"$18,200", confidence:71 },
+    { inv:"INV-AR-7702", customer:"Hertz Corporate Mobility", amount:"$12,000", confidence:54 },
+  ];
+
+  // ---- Collections ----
+  DATA.collections = [
+    { account:"Lattice Logistics", loc:"DFW-Lot-E", balance:"$48,200", days:62, risk:84, action:"Payment plan offered", agent:true, tone:"bad" },
+    { account:"Cobalt Retail Group", loc:"PHX-Garage-A", balance:"$31,450", days:47, risk:71, action:"2 reminders sent", agent:true, tone:"bad" },
+    { account:"Northwind Hotels", loc:"SEA-Structure-1", balance:"$26,800", days:38, risk:58, action:"Reminder sent", agent:true, tone:"warn" },
+    { account:"Vertex Events LLC", loc:"LAS-Lot-B", balance:"$19,900", days:31, risk:49, action:"Reminder scheduled", agent:true, tone:"warn" },
+    { account:"Harborview Medical", loc:"BOS-Garage-C", balance:"$14,300", days:22, risk:28, action:"Monitoring", agent:true, tone:"ok" },
+    { account:"Summit Airlines Crew", loc:"DEN-Lot-A", balance:"$11,750", days:18, risk:22, action:"Monitoring", agent:true, tone:"ok" },
+  ];
+  DATA.riskDist = [
+    { label:"High risk", value:32, color:"var(--bad)" },
+    { label:"Medium risk", value:58, color:"var(--warn)" },
+    { label:"Low risk", value:122, color:"var(--ok)" },
+  ];
+
+  // ---- Owner Settlement ----
+  DATA.settlements = [
+    { owner:"Gateway Real Estate", loc:"6 locations · West", payout:"$214,800", perf:"+8.2%", status:"Paid", tone:"ok" },
+    { owner:"Meridian Property Trust", loc:"11 locations · Central", payout:"$348,500", perf:"+3.1%", status:"Approved", tone:"agent" },
+    { owner:"Cardinal Holdings", loc:"4 locations · East", payout:"$96,200", perf:"−1.4%", status:"Calculated", tone:"warn" },
+    { owner:"Lakeshore Ventures", loc:"7 locations · Midwest", payout:"$172,400", perf:"+5.6%", status:"Paid", tone:"ok" },
+    { owner:"Summit Airports Auth.", loc:"3 locations · Hubs", payout:"$420,100", perf:"+11.0%", status:"Approved", tone:"agent" },
+  ];
+
+  // ---- Anomalies ----
+  DATA.anomalies = [
+    { id:1, sev:"high", title:"Duplicate invoice cluster — Acme Janitorial", sub:"3 invoices with 94–98% field similarity submitted within 17 days across ORD & SFO.", risk:"$9,540", agent:"Anomaly Detection Agent", icon:"copy" },
+    { id:2, sev:"high", title:"Validation abuse pattern — DEN-Lot-A", sub:"218 sessions validated with the same merchant code in a 9-day window. Expected baseline ≈ 40.", risk:"$14,200", agent:"Anomaly Detection Agent", icon:"ticket" },
+    { id:3, sev:"med", title:"Failed-charge pattern — exit lane 4, SFO-T2", sub:"Charge-capture failures up 3.4× vs. trailing 30-day mean. Possible LPR camera fault.", risk:"$6,820", agent:"Anomaly Detection Agent", icon:"camera" },
+    { id:4, sev:"med", title:"Rate discrepancy — Brightline Electric", sub:"Invoiced labor rate $1,840/stall vs. contracted $1,720/stall across 12 line items.", risk:"$1,440", agent:"Reconciliation Agent", icon:"trending" },
+    { id:5, sev:"low", title:"Off-contract vendor spend — Pacific Signage", sub:"Two POs issued outside the approved vendor list for signage category.", risk:"$3,260", agent:"Anomaly Detection Agent", icon:"flag" },
+  ];
+  DATA.leakageTrend = [0.12,0.31,0.44,0.58,0.71,0.86,0.97,1.08,1.19,1.3];
+  DATA.leakageMonths = ["Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May"];
+
+  // ---- Audit trail ----
+  DATA.audit = [
+    { time:"14:32:08", agent:"PO Matching Agent", action:"Auto-approved INV-44821", conf:96, outcome:"auto", src:"PO-3360, GR-8841" },
+    { time:"14:30:55", agent:"Anomaly Detection Agent", action:"Flagged INV-44888 (duplicate)", conf:41, outcome:"escalated", src:"INV-44602" },
+    { time:"14:28:13", agent:"Cash Application Agent", action:"Applied DEP-90412 → 14 invoices", conf:97, outcome:"auto", src:"Remittance #R-2241" },
+    { time:"14:22:41", agent:"Exception Agent", action:"Escalated INV-44903 (price variance)", conf:61, outcome:"escalated", src:"C-2024-0142, PO-3391" },
+    { time:"14:19:02", agent:"Payment Agent", action:"Scheduled 214 payments", conf:99, outcome:"auto", src:"Batch PB-0528" },
+    { time:"14:15:37", agent:"Revenue Classification Agent", action:"Classified 62 lines (ASC 606)", conf:95, outcome:"auto", src:"Rule set RC-606-v4" },
+    { time:"14:09:50", agent:"Reconciliation Agent", action:"Override: rate corrected INV-44912", conf:72, outcome:"overridden", src:"PO-3404", by:"D. Okafor" },
+    { time:"14:02:18", agent:"Collections Agent", action:"Offered payment plan — Lattice Logistics", conf:84, outcome:"auto", src:"Policy COL-04" },
+    { time:"13:58:44", agent:"Cash Flow Forecast Agent", action:"Updated 30-day forecast", conf:90, outcome:"auto", src:"Model CF-v7" },
+    { time:"13:51:09", agent:"Invoice Ingestion Agent", action:"Extracted 41 invoices from inbox", conf:93, outcome:"auto", src:"OCR batch OCR-1190" },
+  ];
+
+  DATA.thresholds = [
+    { agent:"PO Matching Agent", value:85, desc:"3-way match auto-approve" },
+    { agent:"Cash Application Agent", value:90, desc:"Auto-apply deposits" },
+    { agent:"Revenue Classification Agent", value:88, desc:"ASC 606 auto-classify" },
+    { agent:"Payment Agent", value:95, desc:"Schedule without review" },
+    { agent:"Collections Agent", value:80, desc:"Auto-send outreach" },
+  ];
+
+  // ---- Analytics ----
+  DATA.analytics = {
+    touchlessTrend: [58,61,64,67,69,72,74,77,79,80,81,82],
+    costPerInvoice: [4.10,3.85,3.60,3.20,2.95,2.70,2.40,2.15,1.90,1.70,1.55,1.42],
+    closeCycle: [5.5,5.1,4.6,4.0,3.4,2.9,2.4,2.0,1.7,1.5,1.3,1.2],
+    dso: [41,40,38,37,36,34,33,32,31,30,29,28.4],
+    overrideRate: [12,11,10,9.5,8.8,8.0,7.2,6.5,6.0,5.4,5.0,4.6],
+    months: ["Jun","Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May"],
+  };
+  DATA.analyticsCards = [
+    { label:"Touchless Rate", value:"82%", target:"Target 85%", pct:96, dir:"up", delta:"+24 pts YoY" },
+    { label:"Cost / Invoice", value:"$1.42", target:"Target $1.25", pct:88, dir:"up", delta:"−65% YoY" },
+    { label:"Close Cycle", value:"1.2 days", target:"Target 1.0 day", pct:83, dir:"up", delta:"−78% YoY" },
+    { label:"DSO", value:"28.4 days", target:"Target 26 days", pct:91, dir:"up", delta:"−12.6 days YoY" },
+    { label:"Leakage Recovered", value:"$1.3M", target:"YTD $7.8M", pct:74, dir:"up", delta:"+$0.4M MTD" },
+    { label:"Human Override Rate", value:"4.6%", target:"Target <5%", pct:92, dir:"up", delta:"−7.4 pts YoY" },
+  ];
+
+  window.MOCK = DATA;
+})();
+
+  </script>
+
+  <script type="text/babel">
+/* Finance OS — monoline icon set (brand uses thin, rounded-stroke line icons).
+   <Icon name="..." /> renders a 24x24 stroke SVG. */
+(function () {
+  const P = {
+    // nav
+    grid: "M4 4h7v7H4zM13 4h7v7h-7zM13 13h7v7h-7zM4 13h7v7H4z",
+    inbox: "M3 12h5l2 3h4l2-3h5M5 5h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z",
+    coins: "M12 3c4.97 0 9 1.34 9 3s-4.03 3-9 3-9-1.34-9-3 4.03-3 9-3zM3 6v6c0 1.66 4.03 3 9 3s9-1.34 9-3V6M3 12v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6",
+    phone: "M14 4h2a2 2 0 012 2v12a2 2 0 01-2 2H8a2 2 0 01-2-2V6a2 2 0 012-2h2M10 4h4M11 17h2",
+    radar: "M19.07 4.93A10 10 0 1122 12M12 12l5-5M12 12v.01M8 12a4 4 0 014-4",
+    activity: "M22 12h-4l-3 9L9 3l-3 9H2",
+    chart: "M3 3v18h18M7 14l3-3 3 3 5-6",
+    // metric icons
+    zap: "M13 2L3 14h7l-1 8 10-12h-7l1-8z",
+    alert: "M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 001.7 3h16.9a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z",
+    calendar: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z",
+    wallet: "M19 7V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-2M21 7H7a2 2 0 00-2 2v0M16 12h.01",
+    shield: "M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3z",
+    // ui
+    search: "M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3",
+    bell: "M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0",
+    moon: "M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z",
+    sun: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4M12 8a4 4 0 100 8 4 4 0 000-8z",
+    menu: "M3 6h18M3 12h18M3 18h18",
+    chevL: "M15 18l-6-6 6-6",
+    chevR: "M9 18l6-6-6-6",
+    chevD: "M6 9l6 6 6-6",
+    arrowUp: "M12 19V5M5 12l7-7 7 7",
+    arrowDown: "M12 5v14M19 12l-7 7-7-7",
+    arrowR: "M5 12h14M12 5l7 7-7 7",
+    check: "M20 6L9 17l-5-5",
+    checkCircle: "M22 11.1V12a10 10 0 11-5.9-9.1M22 4L12 14.01l-3-3",
+    x: "M18 6L6 18M6 6l12 12",
+    sparkle: "M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4L12 3z",
+    sparkle2: "M5 3v4M3 5h4M6 17v4M4 19h4M13 3l2.5 6.5L22 12l-6.5 2.5L13 21l-2.5-6.5L4 12l6.5-2.5L13 3z",
+    eye: "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7zM12 9a3 3 0 100 6 3 3 0 000-6z",
+    file: "M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5zM14 3v5h5",
+    fileText: "M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5zM14 3v5h5M9 13h6M9 17h4",
+    link: "M9 15l6-6M11 6l1-1a4 4 0 015.7 5.7l-1 1M7 13l-1 1A4 4 0 0011.7 19.7l1-1",
+    scale: "M12 3v18M6 7l-3 6a3 3 0 006 0L6 7zM18 7l-3 6a3 3 0 006 0l-3-6zM4 7h16M8 21h8",
+    lock: "M5 11h14a1 1 0 011 1v8a1 1 0 01-1 1H5a1 1 0 01-1-1v-8a1 1 0 011-1zM8 11V7a4 4 0 018 0v4",
+    copy: "M9 9h11a1 1 0 011 1v10a1 1 0 01-1 1H9a1 1 0 01-1-1V10a1 1 0 011-1zM5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1",
+    ticket: "M3 9a2 2 0 012-2h14a2 2 0 012 2 2 2 0 000 4 2 2 0 00-2 2 2 2 0 01-2 2H5a2 2 0 01-2-2 2 2 0 000-4 2 2 0 002-2zM12 7v10",
+    camera: "M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3zM12 17a4 4 0 100-8 4 4 0 000 8z",
+    trending: "M22 7l-8.5 8.5-5-5L2 17M16 7h6v6",
+    flag: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7",
+    users: "M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8",
+    building: "M4 21V5a2 2 0 012-2h8a2 2 0 012 2v16M20 21V11a1 1 0 00-1-1h-3M8 7h2M8 11h2M8 15h2",
+    clock: "M12 22a10 10 0 100-20 10 10 0 000 20zM12 6v6l4 2",
+    refresh: "M3 12a9 9 0 0115.5-6.3L21 8M21 3v5h-5M21 12a9 9 0 01-15.5 6.3L3 16M3 21v-5h5",
+    filter: "M22 3H2l8 9.5V19l4 2v-8.5L22 3z",
+    download: "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3",
+    plus: "M12 5v14M5 12h14",
+    minus: "M5 12h14",
+    dollar: "M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",
+    layers: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
+    gauge: "M12 14l4-4M3.34 19a10 10 0 1117.32 0M12 14a2 2 0 100-4 2 2 0 000 4z",
+    target: "M12 22a10 10 0 100-20 10 10 0 000 20zM12 18a6 6 0 100-12 6 6 0 000 12zM12 14a2 2 0 100-4 2 2 0 000 4z",
+    receipt: "M5 2v20l2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1zM8 7h8M8 11h8M8 15h5",
+    send: "M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z",
+    sliders: "M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6",
+  };
+
+  function Icon({ name, size = 18, className = "", style }) {
+    const d = P[name] || P.grid;
+    return React.createElement("svg", {
+      className, width: size, height: size, viewBox: "0 0 24 24",
+      fill: "none", stroke: "currentColor", strokeWidth: 1.7,
+      strokeLinecap: "round", strokeLinejoin: "round", style,
+    }, React.createElement("path", { d }));
+  }
+
+  window.Icon = Icon;
+  window.ICON_PATHS = P;
+})();
+
+  </script>
+  <script type="text/babel">
+/* Finance OS — shared signature components.
+   ConfidenceRing/Bar, AgentBadge, SourceChip, StatusPill, MetricCard, charts. */
+(function () {
+  const { useState, useMemo } = React;
+  const Icon = window.Icon;
+
+  // confidence -> color
+  function confColor(c) {
+    if (c >= 80) return "var(--ok)";
+    if (c >= 60) return "var(--warn)";
+    return "var(--bad)";
+  }
+
+  // ---------- Confidence ring ----------
+  function ConfidenceRing({ value, size = 46, stroke = 4, showLabel = true }) {
+    const r = (size - stroke) / 2;
+    const circ = 2 * Math.PI * r;
+    const off = circ * (1 - value / 100);
+    const col = confColor(value);
+    return (
+      <div className="conf-ring" style={{ width: size, height: size }}>
+        <svg width={size} height={size}>
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--surface-3)" strokeWidth={stroke} />
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={col} strokeWidth={stroke}
+            strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round"
+            style={{ transition: "stroke-dashoffset .6s cubic-bezier(.22,.61,.36,1)" }} />
+        </svg>
+        {showLabel && (
+          <div className="cv" style={{ color: col, fontSize: size * 0.27 }}>{value}</div>
+        )}
+      </div>
+    );
+  }
+
+  // ---------- Confidence bar ----------
+  function ConfidenceBar({ value, width = 70, showVal = true }) {
+    const col = confColor(value);
+    return (
+      <div className="conf">
+        <div className="conf-bar" style={{ width }}>
+          <i style={{ width: value + "%", background: col, transition: "width .6s cubic-bezier(.22,.61,.36,1)" }} />
+        </div>
+        {showVal && <span className="mono tnum" style={{ color: col, fontWeight: 600 }}>{value}%</span>}
+      </div>
+    );
+  }
+
+  // ---------- Agent badge ----------
+  function AgentBadge({ agent, human = false, icon = "sparkle", small = false }) {
+    if (human) {
+      return (
+        <span className="abadge human" style={small ? { fontSize: 9.5, padding: "2px 7px 2px 6px" } : null}>
+          <Icon name="users" size={11} />{agent}
+        </span>
+      );
+    }
+    return (
+      <span className="abadge" style={small ? { fontSize: 9.5, padding: "2px 7px 2px 6px" } : null}>
+        <Icon name={icon} size={11} />{agent}
+      </span>
+    );
+  }
+
+  // ---------- Source / RAG chip ----------
+  function SourceChip({ type, refId, note, onClick }) {
+    return (
+      <span className="chip" onClick={onClick} title={note}>
+        <Icon name={type === "Invoice" ? "receipt" : type === "Policy" ? "scale" : type === "PO" ? "fileText" : type === "Contract" || type === "Lease" ? "file" : "link"} />
+        <span><span className="ctype">{type}</span> {refId}</span>
+      </span>
+    );
+  }
+
+  // ---------- Status pill ----------
+  function StatusPill({ tone = "neutral", children, dot = true }) {
+    return (
+      <span className={"pill " + tone}>
+        {dot && <span className="pdot" />}
+        {children}
+      </span>
+    );
+  }
+
+  // ---------- Sparkline ----------
+  function Sparkline({ data, w = 120, h = 46, color = "var(--ok)", fill = true }) {
+    const { path, area } = useMemo(() => {
+      const min = Math.min(...data), max = Math.max(...data);
+      const span = max - min || 1;
+      const pts = data.map((v, i) => {
+        const x = (i / (data.length - 1)) * w;
+        const y = h - 4 - ((v - min) / span) * (h - 8);
+        return [x, y];
+      });
+      const path = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+      const area = path + ` L${w} ${h} L0 ${h} Z`;
+      return { path, area };
+    }, [data, w, h]);
+    const gid = useMemo(() => "sg" + Math.random().toString(36).slice(2, 7), []);
+    return (
+      <svg className="spark" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" style={{ width: w, height: h }}>
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.28" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {fill && <path d={area} fill={`url(#${gid})`} />}
+        <path d={path} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  // ---------- Line chart (multi-series) ----------
+  function LineChart({ series, labels, h = 240, yFmt = (v) => v, yMax, yMin }) {
+    const pad = { l: 44, r: 16, t: 16, b: 28 };
+    const w = 760;
+    const all = series.flatMap((s) => s.data);
+    const max = yMax != null ? yMax : Math.max(...all) * 1.12;
+    const min = yMin != null ? yMin : Math.min(0, ...all);
+    const span = max - min || 1;
+    const innerW = w - pad.l - pad.r, innerH = h - pad.t - pad.b;
+    const X = (i, n) => pad.l + (i / (n - 1)) * innerW;
+    const Y = (v) => pad.t + innerH - ((v - min) / span) * innerH;
+    const ticks = 4;
+    return (
+      <svg className="chart" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid meet">
+        {Array.from({ length: ticks + 1 }).map((_, i) => {
+          const v = min + (span * i) / ticks;
+          const y = Y(v);
+          return (
+            <g key={i}>
+              <line x1={pad.l} y1={y} x2={w - pad.r} y2={y} stroke="var(--line-1)" strokeWidth="1" />
+              <text x={pad.l - 10} y={y + 3.5} textAnchor="end" fontSize="10" fontFamily="var(--font-mono)" fill="var(--tx-4)">{yFmt(v)}</text>
+            </g>
+          );
+        })}
+        {labels.map((lb, i) => (
+          <text key={i} x={X(i, labels.length)} y={h - 8} textAnchor="middle" fontSize="10" fontFamily="var(--font-mono)" fill="var(--tx-4)">{lb}</text>
+        ))}
+        {series.map((s, si) => {
+          const pts = s.data.map((v, i) => [X(i, s.data.length), Y(v)]);
+          const d = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+          const gid = "lc" + si + Math.round(X(0, 2));
+          return (
+            <g key={si}>
+              {s.fill && (
+                <>
+                  <defs>
+                    <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={s.color} stopOpacity="0.22" />
+                      <stop offset="100%" stopColor={s.color} stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path d={d + ` L${pts[pts.length-1][0]} ${pad.t+innerH} L${pts[0][0]} ${pad.t+innerH} Z`} fill={`url(#${gid})`} />
+                </>
+              )}
+              <path d={d} fill="none" stroke={s.color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={s.dashed ? "5 5" : "none"} />
+              {s.dots !== false && pts.map((p, i) => (
+                <circle key={i} cx={p[0]} cy={p[1]} r="3" fill="var(--surface)" stroke={s.color} strokeWidth="2" />
+              ))}
+            </g>
+          );
+        })}
+      </svg>
+    );
+  }
+
+  // ---------- Bar chart ----------
+  function BarChart({ data, labels, h = 220, color = "var(--accent)", yFmt = (v) => v }) {
+    const pad = { l: 44, r: 12, t: 14, b: 28 };
+    const w = 760;
+    const max = Math.max(...data) * 1.12;
+    const innerW = w - pad.l - pad.r, innerH = h - pad.t - pad.b;
+    const bw = (innerW / data.length) * 0.56;
+    const gap = (innerW / data.length);
+    const ticks = 4;
+    return (
+      <svg className="chart" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid meet">
+        {Array.from({ length: ticks + 1 }).map((_, i) => {
+          const v = (max * i) / ticks;
+          const y = pad.t + innerH - (v / max) * innerH;
+          return (
+            <g key={i}>
+              <line x1={pad.l} y1={y} x2={w - pad.r} y2={y} stroke="var(--line-1)" strokeWidth="1" />
+              <text x={pad.l - 10} y={y + 3.5} textAnchor="end" fontSize="10" fontFamily="var(--font-mono)" fill="var(--tx-4)">{yFmt(v)}</text>
+            </g>
+          );
+        })}
+        {data.map((v, i) => {
+          const bh = (v / max) * innerH;
+          const x = pad.l + i * gap + (gap - bw) / 2;
+          const y = pad.t + innerH - bh;
+          return (
+            <g key={i}>
+              <rect x={x} y={y} width={bw} height={bh} rx="4" fill={typeof color === "function" ? color(v, i) : color} opacity="0.9" />
+              <text x={x + bw / 2} y={h - 8} textAnchor="middle" fontSize="10" fontFamily="var(--font-mono)" fill="var(--tx-4)">{labels[i]}</text>
+            </g>
+          );
+        })}
+      </svg>
+    );
+  }
+
+  // ---------- Donut ----------
+  function Donut({ data, size = 150, stroke = 22, centerVal, centerLab }) {
+    const r = (size - stroke) / 2;
+    const circ = 2 * Math.PI * r;
+    const total = data.reduce((a, d) => a + d.value, 0);
+    let acc = 0;
+    return (
+      <div style={{ position: "relative", width: size, height: size, flex: "0 0 auto" }}>
+        <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--surface-3)" strokeWidth={stroke} />
+          {data.map((d, i) => {
+            const frac = d.value / total;
+            const dash = frac * circ;
+            const el = (
+              <circle key={i} cx={size/2} cy={size/2} r={r} fill="none" stroke={d.color} strokeWidth={stroke}
+                strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-acc * circ}
+                style={{ transition: "stroke-dashoffset .6s" }} />
+            );
+            acc += frac;
+            return el;
+          })}
+        </svg>
+        <div className="donut-center">
+          <div>
+            <div className="dc-val">{centerVal}</div>
+            <div className="dc-lab">{centerLab}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- Metric card ----------
+  function MetricCard({ m }) {
+    const dirIcon = m.dir === "up" ? "arrowUp" : m.dir === "down" ? "arrowDown" : "minus";
+    const sparkColor = m.tone === "ok" ? "var(--ok)" : m.tone === "warn" ? "var(--warn)" : "var(--accent)";
+    return (
+      <div className="metric">
+        <div className="m-top">
+          <span className="m-lab">{m.label}</span>
+          <span className="m-ico"><Icon name={m.icon} size={15} /></span>
+        </div>
+        <div className="m-val tnum">{m.value}{m.suffix && <small>{m.suffix}</small>}</div>
+        <div className="hstack" style={{ gap: 10 }}>
+          <span className={"m-delta " + m.dir}><Icon name={dirIcon} size={12} />{m.delta}</span>
+          <span className="m-foot">{m.foot}</span>
+        </div>
+        <Sparkline data={m.spark} color={sparkColor} />
+      </div>
+    );
+  }
+
+  Object.assign(window, {
+    ConfidenceRing, ConfidenceBar, AgentBadge, SourceChip, StatusPill,
+    Sparkline, LineChart, BarChart, Donut, MetricCard, confColor,
+  });
+})();
+
+  </script>
+  <script type="text/babel">
+/* Finance OS — shared chrome: Sidebar + TopBar. */
+(function () {
+  const Icon = window.Icon;
+
+  const NAV = [
+    { group: "Overview", items: [
+      { id: "dashboard", label: "Command Center", icon: "grid" },
+    ]},
+    { group: "Accounts Payable", items: [
+      { id: "exceptions", label: "Exception Queue", icon: "inbox", badge: "47", badgeTone: "warn" },
+    ]},
+    { group: "Accounts Receivable", items: [
+      { id: "cash", label: "Cash Application", icon: "coins", badge: "6", badgeTone: "warn" },
+      { id: "collections", label: "Collections", icon: "phone" },
+    ]},
+    { group: "Governance", items: [
+      { id: "anomalies", label: "Anomalies & Leakage", icon: "radar", badge: "5", badgeTone: "warn" },
+      { id: "audit", label: "Agent & Audit Trail", icon: "activity" },
+      { id: "analytics", label: "Analytics", icon: "chart" },
+    ]},
+  ];
+
+  const TITLES = {
+    dashboard: { h: "Command Center", crumb: "OVERVIEW", sub: "Live operations across Accounts Payable & Receivable." },
+    exceptions: { h: "AP Exception Queue", crumb: "ACCOUNTS PAYABLE / REVIEW", sub: "Items the agents routed for human judgment." },
+    cash: { h: "AR Cash Application", crumb: "ACCOUNTS RECEIVABLE", sub: "Deposits matched to open invoices by the Cash Application Agent." },
+    collections: { h: "Collections & Owner Settlement", crumb: "ACCOUNTS RECEIVABLE", sub: "Overdue accounts and weekly revenue-share payouts." },
+    anomalies: { h: "Anomalies & Leakage", crumb: "GOVERNANCE", sub: "Revenue-leakage signals surfaced by detection agents." },
+    audit: { h: "Agent Activity & Audit Trail", crumb: "GOVERNANCE / SOX", sub: "Every agent decision, logged and reversible." },
+    analytics: { h: "Analytics", crumb: "GOVERNANCE", sub: "Outcomes against target — the program scorecard." },
+  };
+
+  function Sidebar({ active, onNav, collapsed, openCount }) {
+    const user = window.MOCK.user;
+    return (
+      <aside className={"sidebar" + (collapsed ? " collapsed" : "")}>
+        <div className="sb-brand">
+          <div className="sb-mark"><Icon name="eye" size={15} style={{ color: "#fff" }} /></div>
+          <div className="sb-text vstack">
+            <span style={{fontFamily:"monospace",fontSize:15,fontWeight:600,color:"var(--tx-1)",letterSpacing:"0.06em"}}>APAR</span>
+            <span className="sb-os">FinanceOS</span>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, overflowY: "auto", paddingBottom: 8 }}>
+          {NAV.map((sec) => (
+            <div className="sb-section" key={sec.group}>
+              <span className="eyebrow">{sec.group}</span>
+              <div className="sb-nav" style={{ marginTop: 6 }}>
+                {sec.items.map((it) => {
+                  const badge = it.id === "exceptions" && openCount != null ? String(openCount) : it.badge;
+                  return (
+                    <div key={it.id} className={"sb-item" + (active === it.id ? " active" : "")}
+                      onClick={() => onNav(it.id)} title={it.label}>
+                      <Icon name={it.icon} size={18} />
+                      <span className="sb-label">{it.label}</span>
+                      {badge && <span className={"sb-badge " + (it.badgeTone || "")}>{badge}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="sb-foot">
+          <div className="sb-user">
+            <div className="sb-ava">{user.initials}</div>
+            <div className="sb-text vstack" style={{ minWidth: 0 }}>
+              <span className="sb-uname">{user.name}</span>
+              <span className="sb-urole">{user.role}</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    );
+  }
+
+  function TopBar({ view, onCollapse, dark, onToggleTheme }) {
+    const t = TITLES[view] || TITLES.dashboard;
+    return (
+      <header className="topbar">
+        <button className="tb-collapse" onClick={onCollapse} title="Toggle sidebar"><Icon name="menu" size={17} /></button>
+        <div className="tb-title">
+          <span className="crumb">{t.crumb}</span>
+          <h1>{t.h}</h1>
+        </div>
+        <div className="tb-search">
+          <Icon name="search" size={15} />
+          <input placeholder="Search invoices, vendors, agents…" />
+          <kbd>⌘K</kbd>
+        </div>
+        <button className="tb-icon" onClick={onToggleTheme} title="Toggle theme">
+          <Icon name={dark ? "sun" : "moon"} size={17} />
+        </button>
+        <button className="tb-icon" title="Notifications"><Icon name="bell" size={17} /><span className="dot" /></button>
+      </header>
+    );
+  }
+
+  Object.assign(window, { Sidebar, TopBar, NAV, TITLES });
+})();
+
+  </script>
+  <script type="text/babel">
+
+/* BEGIN USAGE */
+// tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+// Exports (to window): useTweaks, TweaksPanel, TweakSection, TweakRow, TweakSlider,
+//   TweakToggle, TweakRadio, TweakSelect, TweakText, TweakNumber, TweakColor, TweakButton.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "palette": ["#D97757", "#29261b", "#f6f4ef"],
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        options={['#D97757', '#2A6FDB', '#1F8A5B', '#7A5AE0']}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakColor  label="Palette" value={t.palette}
+//                        options={[['#D97757', '#29261b', '#f6f4ef'],
+//                                  ['#475569', '#0f172a', '#f1f5f9']]}
+//                        onChange={(v) => setTweak('palette', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// TweakRadio is the segmented control for 2–3 short options (auto-falls-back to
+// TweakSelect past ~16/~10 chars per label); reach for TweakSelect directly when
+// options are many or long. For color tweaks always curate 3-4 options rather than
+// a free picker; an option can also be a whole 2–5 color palette (the stored value
+// is the array). The Tweak* controls are a floor, not a ceiling — build custom
+// controls inside the panel if a tweak calls for UI they don't cover.
+/* END USAGE */
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    transform:scale(var(--dc-inv-zoom,1));transform-origin:bottom right;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;box-sizing:border-box;width:100%;min-width:0;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;box-sizing:border-box;min-width:0;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+
+  .twk-chips{display:flex;gap:6px}
+  .twk-chip{position:relative;appearance:none;flex:1;min-width:0;height:46px;
+    padding:0;border:0;border-radius:6px;overflow:hidden;cursor:default;
+    box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06);
+    transition:transform .12s cubic-bezier(.3,.7,.4,1),box-shadow .12s}
+  .twk-chip:hover{transform:translateY(-1px);
+    box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.12)}
+  .twk-chip[data-on="1"]{box-shadow:0 0 0 1.5px rgba(0,0,0,.85),
+    0 2px 6px rgba(0,0,0,.15)}
+  .twk-chip>span{position:absolute;top:0;bottom:0;right:0;width:34%;
+    display:flex;flex-direction:column;box-shadow:-1px 0 0 rgba(0,0,0,.1)}
+  .twk-chip>span>i{flex:1;box-shadow:0 -1px 0 rgba(0,0,0,.1)}
+  .twk-chip>span>i:first-child{box-shadow:none}
+  .twk-chip svg{position:absolute;top:6px;left:6px;width:13px;height:13px;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+    // Same-window signal so in-page listeners (deck-stage rail thumbnails)
+    // can react — the parent message only reaches the host, not peers.
+    window.dispatchEvent(new CustomEvent('tweakchange', { detail: edits }));
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" data-omelette-chrome=""
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">
+          {children}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({ label, children }) {
+  return (
+    <>
+      <div className="twk-sect">{label}</div>
+      {children}
+    </>
+  );
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  // Segments wrap mid-word once per-segment width runs out. The track is
+  // ~248px (280 panel − 28 body pad − 4 seg pad), each button loses 12px
+  // to its own padding, and 11.5px system-ui averages ~6.3px/char — so 2
+  // options fit ~16 chars each, 3 fit ~10. Past that (or >3 options), fall
+  // back to a dropdown rather than wrap.
+  const labelLen = (o) => String(typeof o === 'object' ? o.label : o).length;
+  const maxLen = options.reduce((m, o) => Math.max(m, labelLen(o)), 0);
+  const fitsAsSegments = maxLen <= ({ 2: 16, 3: 10 }[options.length] ?? 0);
+  if (!fitsAsSegments) {
+    // <select> emits strings — map back to the original option value so the
+    // fallback stays type-preserving (numbers, booleans) like the segment path.
+    const resolve = (s) => {
+      const m = options.find((o) => String(typeof o === 'object' ? o.value : o) === s);
+      return m === undefined ? s : typeof m === 'object' ? m.value : m;
+    };
+    return <TweakSelect label={label} value={value} options={options}
+                        onChange={(s) => onChange(resolve(s))} />;
+  }
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+
+// Relative-luminance contrast pick — checkmarks drawn over a swatch need to
+// read on both #111 and #fafafa without per-option configuration. Hex input
+// only (#rgb / #rrggbb); named or rgb()/hsl() colors fall through to "light".
+function __twkIsLight(hex) {
+  const h = String(hex).replace('#', '');
+  const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h.padEnd(6, '0');
+  const n = parseInt(x.slice(0, 6), 16);
+  if (Number.isNaN(n)) return true;
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return r * 299 + g * 587 + b * 114 > 148000;
+}
+
+const __TwkCheck = ({ light }) => (
+  <svg viewBox="0 0 14 14" aria-hidden="true">
+    <path d="M3 7.2 5.8 10 11 4.2" fill="none" strokeWidth="2.2"
+          strokeLinecap="round" strokeLinejoin="round"
+          stroke={light ? 'rgba(0,0,0,.78)' : '#fff'} />
+  </svg>
+);
+
+// TweakColor — curated color/palette picker. Each option is either a single
+// hex string or an array of 1-5 hex strings; the card adapts — a lone color
+// renders solid, a palette renders colors[0] as the hero (left ~2/3) with the
+// rest stacked in a sharp column on the right. onChange emits the
+// option in the shape it was passed (string stays string, array stays array).
+// Without options it falls back to the native color input for back-compat.
+function TweakColor({ label, value, options, onChange }) {
+  if (!options || !options.length) {
+    return (
+      <div className="twk-row twk-row-h">
+        <div className="twk-lbl"><span>{label}</span></div>
+        <input type="color" className="twk-swatch" value={value}
+               onChange={(e) => onChange(e.target.value)} />
+      </div>
+    );
+  }
+  // Native <input type=color> emits lowercase hex per the HTML spec, so
+  // compare case-insensitively. String() guards JSON.stringify(undefined),
+  // which returns the primitive undefined (no .toLowerCase).
+  const key = (o) => String(JSON.stringify(o)).toLowerCase();
+  const cur = key(value);
+  return (
+    <TweakRow label={label}>
+      <div className="twk-chips" role="radiogroup">
+        {options.map((o, i) => {
+          const colors = Array.isArray(o) ? o : [o];
+          const [hero, ...rest] = colors;
+          const sup = rest.slice(0, 4);
+          const on = key(o) === cur;
+          return (
+            <button key={i} type="button" className="twk-chip" role="radio"
+                    aria-checked={on} data-on={on ? '1' : '0'}
+                    aria-label={colors.join(', ')} title={colors.join(' · ')}
+                    style={{ background: hero }}
+                    onClick={() => onChange(o)}>
+              {sup.length > 0 && (
+                <span>
+                  {sup.map((c, j) => <i key={j} style={{ background: c }} />)}
+                </span>
+              )}
+              {on && <__TwkCheck light={__twkIsLight(hero)} />}
+            </button>
+          );
+        })}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+
+  </script>
+  <script type="text/babel">
+/* Screen 1 — Command Center (Dashboard) */
+(function () {
+  const { useState, useEffect, useRef } = React;
+  const Icon = window.Icon;
+
+  function Dashboard({ onNav, onOpenException, showSignature, openCount }) {
+    const M = window.MOCK;
+    const [feed, setFeed] = useState(M.feed);
+    const liveRef = useRef(0);
+
+    // simulate one new feed item arriving periodically
+    useEffect(() => {
+      const extras = [
+        { type:"ok", agent:"PO Matching Agent", action:"Auto-approved", html:"Auto-approved invoice <b class='t-mono'>#INV-44935</b> — match clean", amt:"$1,860", live:true },
+        { type:"ok", agent:"Cash Application Agent", action:"Matched", html:"Auto-applied lockbox deposit to <b>6 invoices</b>", amt:"$58,200", live:true },
+        { type:"agent", agent:"Vendor Inquiry Agent", action:"Replied", html:"Answered <b>4 vendor status inquiries</b> via portal", amt:null, live:true },
+      ];
+      const iv = setInterval(() => {
+        const e = extras[liveRef.current % extras.length];
+        liveRef.current++;
+        setFeed((f) => [{ ...e, id: "live" + Date.now(), time: "just now" }, ...f.map(x => ({ ...x, time: bumpTime(x.time) }))].slice(0, 9));
+      }, 7000);
+      return () => clearInterval(iv);
+    }, []);
+
+    return (
+      <div className="page page-wide">
+        {/* Metric row */}
+        <div className="grid" style={{ gridTemplateColumns: "repeat(5,1fr)" }}>
+          {M.metrics.map((m) => <window.MetricCard key={m.id} m={m.id === "exceptions" && openCount != null ? { ...m, value: String(openCount) } : m} />)}
+        </div>
+
+        {/* AP / AR health + forecast */}
+        <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1.25fr" }}>
+          <HealthPanel side="AP" />
+          <HealthPanel side="AR" />
+          <div className="card">
+            <div className="card-h">
+              <h3><Icon name="trending" /> Cash Flow Forecast</h3>
+              <span className="eyebrow">Next 30 days</span>
+            </div>
+            <div className="card-b">
+              <div className="legend" style={{ marginBottom: 6 }}>
+                <span className="lg line"><i style={{ background: "var(--ok)" }} /> AR inflow</span>
+                <span className="lg line"><i style={{ background: "var(--accent)" }} /> AP outflow</span>
+                <span className="lg" style={{ marginLeft: "auto", color: "var(--ok)" }}>Net +$6.4M</span>
+              </div>
+              <window.LineChart
+                labels={M.forecast.labels}
+                yFmt={(v) => "$" + v.toFixed(0) + "M"}
+                series={[
+                  { data: M.forecast.inflow, color: "var(--ok)", fill: true },
+                  { data: M.forecast.outflow, color: "var(--accent)", dashed: true },
+                ]}
+                h={210}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Feed + exceptions */}
+        <div className="grid" style={{ gridTemplateColumns: "1.15fr 1fr" }}>
+          <div className="card">
+            <div className="card-h">
+              <h3><Icon name="activity" /> Agent Activity</h3>
+              <span className="hstack" style={{ gap: 7 }}><span className="live-dot" /><span className="eyebrow" style={{ color: "var(--ok)" }}>Live</span></span>
+            </div>
+            <div className="card-b" style={{ paddingTop: 4, paddingBottom: 4 }}>
+              <div className="feed">
+                {feed.map((f) => <FeedItem key={f.id} f={f} showSignature={showSignature} />)}
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-h">
+              <h3><Icon name="alert" /> Exceptions Requiring Attention</h3>
+              <span className="card-link" onClick={() => onNav("exceptions")}>View queue <Icon name="arrowR" size={13} /></span>
+            </div>
+            <div className="tbl-wrap">
+              <table className="tbl">
+                <thead><tr><th>Invoice</th><th>Vendor</th><th className="num">Amount</th><th>Confidence</th><th></th></tr></thead>
+                <tbody>
+                  {M.exceptions.slice(0, 5).map((e) => (
+                    <tr key={e.id} onClick={() => onOpenException(e.id)}>
+                      <td><span className="t-mono">{e.id}</span><div className="t-sub">{e.reason}</div></td>
+                      <td className="t-strong">{e.vendor}</td>
+                      <td className="num t-amt">{e.amountStr}</td>
+                      <td>{showSignature ? <window.ConfidenceBar value={e.confidence} width={56} /> : <window.StatusPill tone={e.tone}>{e.confidence}%</window.StatusPill>}</td>
+                      <td className="num"><button className="btn btn-quiet btn-sm" onClick={(ev) => { ev.stopPropagation(); onOpenException(e.id); }}>Review</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function HealthPanel({ side }) {
+    const M = window.MOCK;
+    const isAP = side === "AP";
+    const d = isAP ? M.apHealth : M.arHealth;
+    return (
+      <div className="card">
+        <div className="card-h">
+          <h3><Icon name={isAP ? "inbox" : "coins"} /> {isAP ? "Accounts Payable" : "Accounts Receivable"}</h3>
+          <span className="eyebrow">Today</span>
+        </div>
+        <div className="card-b" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {isAP ? (
+            <>
+              <Stat big label="Invoices processed" value={d.processedToday} />
+              <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                <Stat label="Auto-approved" value={d.autoApproved} tone="ok" />
+                <Stat label="In review" value={d.inReview} tone="warn" />
+              </div>
+              <div className="vstack" style={{ gap: 7 }}>
+                <div className="spread"><span className="m-foot">Touchless</span><span className="mono" style={{ color: "var(--ok)" }}>{d.touchless}%</span></div>
+                <div className="conf-bar" style={{ width: "100%" }}><i style={{ width: d.touchless + "%", background: "var(--ok)" }} /></div>
+                <span className="t-sub">Avg processing time {d.avgTime}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <Stat big label="Payments applied" value={d.paymentsApplied} />
+              <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                <Stat label="Auto-applied" value={d.autoApplied + "%"} tone="ok" />
+                <Stat label="Overdue accounts" value={d.overdue} tone="warn" />
+              </div>
+              <div className="vstack" style={{ gap: 7 }}>
+                <div className="spread"><span className="m-foot">Cash applied automatically</span><span className="mono" style={{ color: "var(--ok)" }}>{d.autoApplied}%</span></div>
+                <div className="conf-bar" style={{ width: "100%" }}><i style={{ width: d.autoApplied + "%", background: "var(--ok)" }} /></div>
+                <span className="t-sub">DSO {d.dso} days</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  function Stat({ label, value, tone, big }) {
+    const col = tone === "ok" ? "var(--ok)" : tone === "warn" ? "var(--warn)" : "var(--tx-1)";
+    return (
+      <div className="vstack" style={{ gap: 3 }}>
+        <span style={{ fontWeight: 300, fontSize: big ? 38 : 26, letterSpacing: "-.03em", color: col, lineHeight: 1 }} className="tnum">{value}</span>
+        <span className="m-lab">{label}</span>
+      </div>
+    );
+  }
+
+  function FeedItem({ f, showSignature }) {
+    const icon = f.type === "ok" ? "checkCircle" : f.type === "bad" ? "alert" : f.type === "warn" ? "arrowUp" : "sparkle";
+    return (
+      <div className="feed-item">
+        <div className={"feed-ico fi-" + f.type}><Icon name={icon} size={15} /></div>
+        <div className="feed-body">
+          <p dangerouslySetInnerHTML={{ __html: f.html + (f.amt ? ` <span class='amt'>${f.amt}</span>` : "") }} />
+          <div className="feed-meta">
+            {showSignature && <window.AgentBadge agent={f.agent} small icon="sparkle" />}
+            {!showSignature && <span className="t-sub">{f.agent}</span>}
+            <span className="feed-time">{f.time}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function bumpTime(t) {
+    if (t === "just now") return "1 min ago";
+    const m = t.match(/^(\d+) min ago$/);
+    if (m) return (parseInt(m[1]) + 1) + " min ago";
+    return t;
+  }
+
+  window.Dashboard = Dashboard;
+})();
+
+  </script>
+  <script type="text/babel">
+/* Screen 2 — AP Exception Queue & Review (hero screen) */
+(function () {
+  const { useState } = React;
+  const Icon = window.Icon;
+
+  function Exceptions({ rows, selectedId, onSelect, onResolve, showSignature, openCount, toast }) {
+    const sel = rows.find((r) => r.id === selectedId) || null;
+    const [filter, setFilter] = useState("all");
+
+    const filtered = rows.filter((r) => filter === "all" ? true : r.tone === filter);
+    const totalAmt = rows.reduce((a, r) => a + r.amount, 0);
+
+    return (
+      <div style={{ position: "relative", height: "100%", overflow: "hidden" }}>
+        <div className="canvas" style={{ position: "absolute", inset: 0 }}>
+          <div className="page page-wide">
+            {/* summary strip */}
+            <div className="grid" style={{ gridTemplateColumns: "repeat(4,1fr)" }}>
+              <MiniStat label="Open exceptions" value={openCount != null ? openCount : rows.length} icon="alert" tone="warn" />
+              <MiniStat label="Total value at risk" value={"$" + totalAmt.toLocaleString()} icon="dollar" tone="flat" />
+              <MiniStat label="Priority for review" value={rows.length} icon="gauge" tone="warn" />
+              <MiniStat label="Oldest in queue" value={"2 days"} icon="clock" tone="flat" />
+            </div>
+
+            <div className="card" style={{ overflow: "hidden" }}>
+              <div className="card-h">
+                <div className="tabs" style={{ border: "none" }}>
+                  {[["all","All"],["bad","Critical"],["warn","Needs review"]].map(([k,lbl]) => (
+                    <div key={k} className={"tab" + (filter===k?" active":"")} onClick={() => setFilter(k)} style={{ padding: "6px 12px", marginBottom: 0 }}>
+                      {lbl}<span className="tcount">{k==="all"?rows.length:rows.filter(r=>r.tone===k).length}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="hstack" style={{ gap: 8 }}>
+                  <button className="btn btn-quiet btn-sm"><Icon name="filter" size={14} /> Filter</button>
+                  <button className="btn btn-quiet btn-sm"><Icon name="download" size={14} /> Export</button>
+                </div>
+              </div>
+              <div className="tbl-wrap">
+                <table className="tbl">
+                  <thead>
+                    <tr>
+                      <th>Invoice</th><th>Vendor</th><th className="num">Amount</th><th>Location</th>
+                      <th>Flag reason</th><th>Confidence</th><th>Flagged by</th><th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((r) => (
+                      <tr key={r.id} className={r.id === selectedId ? "sel" : ""} onClick={() => onSelect(r.id)}>
+                        <td><span className="t-mono">{r.id}</span><div className="t-sub">{r.date}</div></td>
+                        <td>
+                          <div className="t-vendor">
+                            <span className="t-logo">{r.vinit}</span>
+                            <span className="t-strong">{r.vendor}</span>
+                          </div>
+                        </td>
+                        <td className="num t-amt">{r.amountStr}</td>
+                        <td><span className="mono" style={{ fontSize: 11.5 }}>{r.location}</span></td>
+                        <td style={{ maxWidth: 200 }}><span style={{ color: "var(--tx-1)" }}>{r.reason}</span></td>
+                        <td>{showSignature ? <window.ConfidenceRing value={r.confidence} size={38} stroke={3.5} /> : <span className="t-amt">{r.confidence}%</span>}</td>
+                        <td>{showSignature ? <window.AgentBadge agent={r.agent} small /> : <span className="t-sub">{r.agent}</span>}</td>
+                        <td><window.StatusPill tone={r.tone}>{r.status}</window.StatusPill></td>
+                      </tr>
+                    ))}
+                    {filtered.length === 0 && (
+                      <tr><td colSpan={8}><div className="empty"><Icon name="checkCircle" size={34} /><div><b style={{color:"var(--tx-1)"}}>Queue clear.</b><div style={{marginTop:4}}>Every exception in this view has been resolved.</div></div></div></td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Drawer */}
+        <div className={"drawer-scrim" + (sel ? " open" : "")} onClick={() => onSelect(null)} />
+        <ExceptionDrawer row={sel} onClose={() => onSelect(null)} onResolve={onResolve} showSignature={showSignature} />
+      </div>
+    );
+  }
+
+  function MiniStat({ label, value, icon, tone }) {
+    return (
+      <div className="metric" style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+        <span className="m-ico" style={{ height: 40, width: 40 }}><Icon name={icon} size={19} /></span>
+        <div className="vstack" style={{ gap: 2 }}>
+          <span className="m-val tnum" style={{ fontSize: 26 }}>{value}</span>
+          <span className="m-lab">{label}</span>
+        </div>
+      </div>
+    );
+  }
+
+  function ExceptionDrawer({ row, onClose, onResolve, showSignature }) {
+    if (!row) return <div className="drawer" />;
+    const m = row.match;
+    return (
+      <div className={"drawer open"}>
+        <div className="drawer-h">
+          <div className="vstack" style={{ gap: 6 }}>
+            <span className="eyebrow">{row.location}</span>
+            <div className="hstack" style={{ gap: 10 }}>
+              <span style={{ fontSize: 20, fontWeight: 600, color: "var(--tx-1)" }} className="t-mono">{row.id}</span>
+              <window.StatusPill tone={row.tone}>{row.status}</window.StatusPill>
+            </div>
+            <span className="t-sub">{row.vendor} · {row.terms} · {row.date}</span>
+          </div>
+          <button className="x" onClick={onClose}><Icon name="x" size={16} /></button>
+        </div>
+
+        <div className="drawer-b">
+          {/* Confidence + reasoning */}
+          {showSignature && (
+            <div className="reason">
+              <div className="rh">
+                <window.ConfidenceRing value={row.confidence} size={52} stroke={5} />
+                <div className="vstack" style={{ gap: 4 }}>
+                  <window.AgentBadge agent={row.agent} />
+                  <span className="eyebrow" style={{ color: "var(--tx-3)" }}>Confidence assessment</span>
+                </div>
+              </div>
+              <p className="rq">{row.reasoning}</p>
+            </div>
+          )}
+
+          {/* Extracted invoice data */}
+          <div className="dsec">
+            <div className="spread">
+              <span className="eyebrow">Extracted invoice data</span>
+              {showSignature && <window.AgentBadge agent="Invoice Ingestion Agent" small icon="sparkle2" />}
+            </div>
+            <table className="li">
+              <thead><tr><th>Line item</th><th className="num">Qty</th><th className="num">Unit</th><th className="num">Total</th></tr></thead>
+              <tbody>
+                {row.lineItems.map((li, i) => (
+                  <tr key={i}>
+                    <td className={li.flag ? "flag" : ""} style={{ color: li.flag ? "var(--bad)" : "var(--tx-1)" }}>
+                      {li.flag && <Icon name="alert" size={12} style={{ display: "inline", verticalAlign: "-1px", marginRight: 5 }} />}{li.desc}
+                    </td>
+                    <td className="num">{li.qty}</td>
+                    <td className="num">{li.unit}</td>
+                    <td className="num" style={{ color: "var(--tx-1)", fontWeight: 600 }}>{li.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 3-way match */}
+          <div className="dsec">
+            <span className="eyebrow">3-way match</span>
+            <div className="match">
+              <div className={"mc" + (m.po.mismatch ? " mismatch" : "")}>
+                <span className="mh">Purchase order</span>
+                <span className="mv">{m.po.rate}</span>
+                <span className="t-sub">{m.po.label}{row.po !== "—" ? " · " + row.po : ""}</span>
+              </div>
+              <div className={"mc" + (m.gr.mismatch ? " mismatch" : "")}>
+                <span className="mh">Goods receipt</span>
+                <span className="mv">{m.gr.rate}</span>
+                <span className="t-sub">{m.gr.label}</span>
+              </div>
+              <div className={"mc" + (m.inv.mismatch ? " mismatch" : "")}>
+                <span className="mh">Invoice</span>
+                <span className="mv">{m.inv.rate}</span>
+                <span className="t-sub">{m.inv.label}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* RAG sources */}
+          {showSignature && (
+            <div className="dsec">
+              <span className="eyebrow">Grounded in</span>
+              <div className="chips">
+                {row.sources.map((s, i) => <window.SourceChip key={i} type={s.type} refId={s.ref} note={s.note} />)}
+              </div>
+            </div>
+          )}
+
+          <div className="audit-note"><Icon name="lock" size={13} /> All actions logged to the SOX audit trail.</div>
+        </div>
+
+        <div className="drawer-f">
+          <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <button className="btn btn-ok" onClick={() => onResolve(row.id, "approved")}><Icon name="check" size={15} /> Approve</button>
+            <button className="btn btn-bad" onClick={() => onResolve(row.id, "rejected")}><Icon name="x" size={15} /> Reject</button>
+          </div>
+          <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+            <button className="btn btn-quiet btn-sm" onClick={() => onResolve(row.id, "adjusted")}><Icon name="scale" size={14} /> Adjust</button>
+            <button className="btn btn-quiet btn-sm" onClick={() => onResolve(row.id, "clarify")}><Icon name="send" size={14} /> Clarify</button>
+            <button className="btn btn-quiet btn-sm" onClick={() => onResolve(row.id, "escalated")}><Icon name="arrowUp" size={14} /> Escalate</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  window.Exceptions = Exceptions;
+})();
+
+  </script>
+  <script type="text/babel">
+/* Screen 3 — AR Cash Application */
+(function () {
+  const { useState } = React;
+  const Icon = window.Icon;
+
+  function CashApplication({ showSignature, toast }) {
+    const M = window.MOCK;
+    const [sel, setSel] = useState(null);
+    const selDep = M.deposits.find((d) => d.id === sel) || null;
+
+    return (
+      <div style={{ position: "relative", height: "100%", overflow: "hidden" }}>
+        <div className="canvas" style={{ position: "absolute", inset: 0 }}>
+          <div className="page page-wide">
+            <div className="banner warn">
+              <Icon name="wallet" size={22} />
+              <div className="bt">
+                <h4>{M.unappliedTotal} in {M.unappliedCount} deposits awaiting application</h4>
+                <p>The Cash Application Agent auto-applied 94% of today's cash. These need a human match.</p>
+              </div>
+              <button className="btn btn-quiet btn-sm">Review all</button>
+            </div>
+
+            <div className="grid" style={{ gridTemplateColumns: "repeat(4,1fr)" }}>
+              <Mini label="Cash applied today" value="$3.1M" sub="94% automatically" tone="ok" />
+              <Mini label="Auto-match rate" value="94%" sub="+6 pts vs last month" tone="ok" />
+              <Mini label="Avg match time" value="1.4s" sub="per deposit" tone="flat" />
+              <Mini label="Unmatched" value="$18.9K" sub="1 deposit" tone="bad" />
+            </div>
+
+            <div className="card" style={{ overflow: "hidden" }}>
+              <div className="card-h">
+                <h3><Icon name="coins" /> Matched Payments</h3>
+                <span className="eyebrow">Today · 6 of 142 need review</span>
+              </div>
+              <div className="tbl-wrap">
+                <table className="tbl">
+                  <thead><tr><th>Deposit</th><th>Source</th><th className="num">Amount</th><th>Matched to</th><th>Confidence</th><th>Status</th><th></th></tr></thead>
+                  <tbody>
+                    {M.deposits.map((d) => (
+                      <tr key={d.id} className={d.id === sel ? "sel" : ""} onClick={() => d.tone !== "ok" && setSel(d.id)} style={{ cursor: d.tone === "ok" ? "default" : "pointer" }}>
+                        <td><span className="t-mono">{d.id}</span></td>
+                        <td>{d.payer}</td>
+                        <td className="num t-amt">{d.amount}</td>
+                        <td>{d.agent ? <span className="hstack" style={{ gap: 8 }}>{d.invoices}{showSignature && <window.AgentBadge agent="Cash App Agent" small />}</span> : <span style={{ color: "var(--warn)" }}>{d.invoices}</span>}</td>
+                        <td>{showSignature ? <window.ConfidenceBar value={d.confidence} width={56} /> : <span className="t-amt">{d.confidence}%</span>}</td>
+                        <td><window.StatusPill tone={d.tone}>{d.status}</window.StatusPill></td>
+                        <td className="num">{d.tone !== "ok" && <button className="btn btn-quiet btn-sm" onClick={(e) => { e.stopPropagation(); setSel(d.id); }}>Match</button>}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={"drawer-scrim" + (selDep ? " open" : "")} onClick={() => setSel(null)} />
+        <div className={"drawer" + (selDep ? " open" : "")}>
+          {selDep && (
+            <>
+              <div className="drawer-h">
+                <div className="vstack" style={{ gap: 6 }}>
+                  <span className="eyebrow">Unapplied deposit</span>
+                  <div className="hstack" style={{ gap: 10 }}>
+                    <span style={{ fontSize: 20, fontWeight: 600 }} className="t-mono">{selDep.id}</span>
+                    <window.StatusPill tone={selDep.tone}>{selDep.status}</window.StatusPill>
+                  </div>
+                  <span className="t-sub">{selDep.payer} · received today</span>
+                </div>
+                <button className="x" onClick={() => setSel(null)}><Icon name="x" size={16} /></button>
+              </div>
+              <div className="drawer-b">
+                <div className="reason">
+                  <div className="rh">
+                    <window.ConfidenceRing value={selDep.confidence} size={52} stroke={5} />
+                    <div className="vstack" style={{ gap: 4 }}>
+                      {showSignature && <window.AgentBadge agent="Cash Application Agent" />}
+                      <span className="eyebrow" style={{ color: "var(--tx-3)" }}>Suggested matches</span>
+                    </div>
+                  </div>
+                  <p className="rq">Deposit amount {selDep.amount} is closest to this customer's open balance. Remittance advice was partial — the agent ranked candidate invoices by amount and aging.</p>
+                </div>
+
+                <div className="dsec">
+                  <span className="eyebrow">Candidate invoices</span>
+                  {M.suggestedMatches.map((s, i) => (
+                    <div key={i} className="card" style={{ padding: "12px 14px" }}>
+                      <div className="spread">
+                        <div className="vstack" style={{ gap: 3 }}>
+                          <span className="t-mono" style={{ color: "var(--tx-1)" }}>{s.inv}</span>
+                          <span className="t-sub">{s.customer}</span>
+                        </div>
+                        <div className="hstack" style={{ gap: 14 }}>
+                          <span className="t-amt">{s.amount}</span>
+                          {showSignature && <window.ConfidenceRing value={s.confidence} size={40} stroke={3.5} />}
+                          <input type="checkbox" defaultChecked={s.confidence > 60} style={{ width: 18, height: 18, accentColor: "var(--accent)" }} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="audit-note"><Icon name="lock" size={13} /> Applied matches post to the AR sub-ledger and SOX audit trail.</div>
+              </div>
+              <div className="drawer-f">
+                <button className="btn btn-grad btn-block" onClick={() => { setSel(null); toast("Match applied", selDep.id + " applied to 2 invoices · logged"); }}><Icon name="check" size={15} /> Apply match</button>
+                <button className="btn btn-quiet btn-block" onClick={() => setSel(null)}>Find more candidates</button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  function Mini({ label, value, sub, tone }) {
+    const col = tone === "ok" ? "var(--ok)" : tone === "bad" ? "var(--bad)" : "var(--tx-1)";
+    return (
+      <div className="metric">
+        <span className="m-lab">{label}</span>
+        <span className="m-val tnum" style={{ color: col, fontSize: 30 }}>{value}</span>
+        <span className="m-foot">{sub}</span>
+      </div>
+    );
+  }
+
+  window.CashApplication = CashApplication;
+})();
+
+  </script>
+  <script type="text/babel">
+/* Screen 4 — Collections & Owner Settlement */
+(function () {
+  const { useState } = React;
+  const Icon = window.Icon;
+
+  function Collections({ showSignature }) {
+    const M = window.MOCK;
+    const [tab, setTab] = useState("collections");
+    const totalRisk = M.riskDist.reduce((a, d) => a + d.value, 0);
+
+    return (
+      <div className="page page-wide">
+        <div className="tabs">
+          <div className={"tab" + (tab === "collections" ? " active" : "")} onClick={() => setTab("collections")}>
+            <Icon name="phone" size={15} /> Collections <span className="tcount">{M.collections.length}</span>
+          </div>
+          <div className={"tab" + (tab === "settlement" ? " active" : "")} onClick={() => setTab("settlement")}>
+            <Icon name="building" size={15} /> Owner Settlement <span className="tcount">{M.settlements.length}</span>
+          </div>
+        </div>
+
+        {tab === "collections" ? (
+          <>
+            <div className="grid" style={{ gridTemplateColumns: "1.7fr 1fr" }}>
+              <div className="card" style={{ overflow: "hidden" }}>
+                <div className="card-h">
+                  <h3><Icon name="phone" /> Overdue Accounts</h3>
+                  <span className="eyebrow">Risk-ranked by Collections Agent</span>
+                </div>
+                <div className="tbl-wrap">
+                  <table className="tbl">
+                    <thead><tr><th>Account</th><th className="num">Balance</th><th className="num">Days</th><th>Risk</th><th>Agent action</th></tr></thead>
+                    <tbody>
+                      {M.collections.map((c, i) => (
+                        <tr key={i}>
+                          <td><span className="t-strong">{c.account}</span><div className="t-sub">{c.loc}</div></td>
+                          <td className="num t-amt">{c.balance}</td>
+                          <td className="num"><span style={{ color: c.days > 45 ? "var(--bad)" : c.days > 30 ? "var(--warn)" : "var(--tx-2)" }} className="tnum">{c.days}d</span></td>
+                          <td>
+                            <div className="hstack" style={{ gap: 9 }}>
+                              <div className="conf-bar" style={{ width: 52 }}><i style={{ width: c.risk + "%", background: c.tone === "bad" ? "var(--bad)" : c.tone === "warn" ? "var(--warn)" : "var(--ok)" }} /></div>
+                              <span className="mono tnum" style={{ color: c.tone === "bad" ? "var(--bad)" : c.tone === "warn" ? "var(--warn)" : "var(--ok)", fontWeight: 600 }}>{c.risk}</span>
+                            </div>
+                          </td>
+                          <td>{showSignature ? <window.AgentBadge agent={c.action} small icon="send" /> : <span className="t-sub">{c.action}</span>}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-h"><h3><Icon name="gauge" /> Risk Distribution</h3></div>
+                <div className="card-b" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+                  <window.Donut data={M.riskDist} size={170} stroke={24} centerVal={totalRisk} centerLab="ACCOUNTS" />
+                  <div className="legend" style={{ flexDirection: "column", gap: 12, width: "100%" }}>
+                    {M.riskDist.map((d, i) => (
+                      <div key={i} className="spread" style={{ width: "100%" }}>
+                        <span className="lg"><i style={{ background: d.color }} /> {d.label}</span>
+                        <span className="mono" style={{ color: "var(--tx-1)" }}>{d.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="banner" style={{ background: "var(--agent-dim)", borderColor: "color-mix(in srgb,var(--agent) 26%,transparent)" }}>
+              <Icon name="refresh" size={22} style={{ color: "var(--agent-bright)" }} />
+              <div className="bt">
+                <h4>Owner payouts moved from monthly to weekly</h4>
+                <p>The Owner Settlement Agent now calculates revenue-share weekly, cutting owner wait time from 30 days to 7.</p>
+              </div>
+              <window.AgentBadge agent="Owner Settlement Agent" icon="sparkle2" />
+            </div>
+
+            <div className="grid" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
+              <Mini label="This week's payouts" value="$1.25M" sub="31 owners" tone="flat" />
+              <Mini label="Avg facility performance" value="+5.3%" sub="vs. prior week" tone="ok" />
+              <Mini label="Settlement cadence" value="Weekly" sub="was monthly" tone="ok" />
+            </div>
+
+            <div className="card" style={{ overflow: "hidden" }}>
+              <div className="card-h">
+                <h3><Icon name="building" /> Revenue-Share Owners</h3>
+                <span className="eyebrow">Week of May 25 – 31</span>
+              </div>
+              <div className="tbl-wrap">
+                <table className="tbl">
+                  <thead><tr><th>Owner</th><th>Portfolio</th><th className="num">Weekly payout</th><th>Performance</th><th>Status</th></tr></thead>
+                  <tbody>
+                    {M.settlements.map((s, i) => (
+                      <tr key={i}>
+                        <td className="t-strong">{s.owner}</td>
+                        <td><span className="t-sub">{s.loc}</span></td>
+                        <td className="num t-amt">{s.payout}</td>
+                        <td><span className="mono tnum" style={{ color: s.perf.startsWith("−") ? "var(--bad)" : "var(--ok)" }}>{s.perf}</span></td>
+                        <td><window.StatusPill tone={s.tone}>{s.status}</window.StatusPill></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  function Mini({ label, value, sub, tone }) {
+    const col = tone === "ok" ? "var(--ok)" : tone === "bad" ? "var(--bad)" : "var(--tx-1)";
+    return (
+      <div className="metric">
+        <span className="m-lab">{label}</span>
+        <span className="m-val tnum" style={{ color: col, fontSize: 30 }}>{value}</span>
+        <span className="m-foot">{sub}</span>
+      </div>
+    );
+  }
+
+  window.Collections = Collections;
+})();
+
+  </script>
+  <script type="text/babel">
+/* Screen 5 — Anomalies & Leakage */
+(function () {
+  const Icon = window.Icon;
+
+  function Anomalies({ showSignature, toast }) {
+    const M = window.MOCK;
+    const totalRisk = M.anomalies.reduce((a, x) => a + parseInt(x.risk.replace(/[$,]/g, "")), 0);
+
+    return (
+      <div className="page page-wide">
+        <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+          <Mini label="Leakage recovered MTD" value="$1.3M" sub="+$0.4M this month" tone="ok" big />
+          <Mini label="At risk · open signals" value={"$" + totalRisk.toLocaleString()} sub={M.anomalies.length + " active anomalies"} tone="bad" />
+          <Mini label="Detection precision" value="91%" sub="confirmed / flagged" tone="ok" />
+        </div>
+
+        <div className="grid" style={{ gridTemplateColumns: "1.45fr 1fr" }}>
+          <div className="vstack" style={{ gap: "var(--gap)" }}>
+            {M.anomalies.map((a) => (
+              <div key={a.id} className={"alert sev-" + a.sev}>
+                <div className="alert-top">
+                  <div className="alert-ico" style={{ color: a.sev === "high" ? "var(--bad)" : a.sev === "med" ? "var(--warn)" : "var(--accent)" }}>
+                    <Icon name={a.icon} size={19} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="hstack" style={{ gap: 9, marginBottom: 3 }}>
+                      <window.StatusPill tone={a.sev === "high" ? "bad" : a.sev === "med" ? "warn" : "neutral"}>{a.sev === "high" ? "High severity" : a.sev === "med" ? "Medium" : "Low"}</window.StatusPill>
+                    </div>
+                    <h4>{a.title}</h4>
+                    <p className="asub">{a.sub}</p>
+                  </div>
+                  <div className="alert-risk">
+                    <div className="ar-val">{a.risk}</div>
+                    <div className="ar-lab">at risk</div>
+                  </div>
+                </div>
+                <div className="alert-foot">
+                  {showSignature && <window.AgentBadge agent={a.agent} small icon="radar" />}
+                  <div className="hstack" style={{ gap: 8, marginLeft: "auto" }}>
+                    <button className="btn btn-quiet btn-sm" onClick={() => toast("Dismissed", a.title + " marked as reviewed")}>Dismiss</button>
+                    <button className="btn btn-grad btn-sm" onClick={() => toast("Investigation opened", "Case created · routed to your queue")}><Icon name="eye" size={14} /> Investigate</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="card" style={{ alignSelf: "flex-start" }}>
+            <div className="card-h">
+              <h3><Icon name="shield" /> Leakage Recovered</h3>
+              <span className="eyebrow">Trailing 10 months</span>
+            </div>
+            <div className="card-b">
+              <div className="hstack" style={{ alignItems: "baseline", gap: 10, marginBottom: 14 }}>
+                <span style={{ fontWeight: 300, fontSize: 44, letterSpacing: "-.03em", color: "var(--tx-1)" }} className="tnum">$7.8M</span>
+                <span className="mono" style={{ color: "var(--ok)" }}>YTD recovered</span>
+              </div>
+              <window.LineChart
+                labels={M.leakageMonths}
+                yFmt={(v) => "$" + v.toFixed(1) + "M"}
+                series={[{ data: M.leakageTrend, color: "var(--ok)", fill: true }]}
+                h={200}
+              />
+              <hr className="divider" style={{ margin: "16px 0" }} />
+              <div className="vstack" style={{ gap: 12 }}>
+                {[["Duplicate invoices", "$3.2M", 41], ["Validation abuse", "$2.4M", 31], ["Rate discrepancies", "$1.3M", 17], ["Failed-charge recovery", "$0.9M", 11]].map(([k, v, pct], i) => (
+                  <div key={i} className="vstack" style={{ gap: 5 }}>
+                    <div className="spread"><span className="m-foot">{k}</span><span className="t-amt">{v}</span></div>
+                    <div className="conf-bar" style={{ width: "100%" }}><i style={{ width: pct + "%", background: "var(--accent-grad)" }} /></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function Mini({ label, value, sub, tone, big }) {
+    const col = tone === "ok" ? "var(--ok)" : tone === "bad" ? "var(--bad)" : "var(--tx-1)";
+    return (
+      <div className="metric">
+        <span className="m-lab">{label}</span>
+        <span className="m-val tnum" style={{ color: col, fontSize: big ? 36 : 30 }}>{value}</span>
+        <span className="m-foot">{sub}</span>
+      </div>
+    );
+  }
+
+  window.Anomalies = Anomalies;
+})();
+
+  </script>
+  <script type="text/babel">
+/* Screen 6 — Agent Activity & Audit Trail (Controller view) */
+(function () {
+  const { useState, useRef, useEffect } = React;
+  const Icon = window.Icon;
+
+  function Audit({ showSignature, toast }) {
+    const M = window.MOCK;
+    const [outcome, setOutcome] = useState("all");
+    const rows = M.audit.filter((r) => outcome === "all" ? true : r.outcome === outcome);
+    const [thresholds, setThresholds] = useState(M.thresholds.map((t) => t.value));
+
+    return (
+      <div className="page page-wide">
+        <div className="grid" style={{ gridTemplateColumns: "1.55fr 1fr", alignItems: "start" }}>
+          {/* Audit log */}
+          <div className="card" style={{ overflow: "hidden" }}>
+            <div className="card-h">
+              <h3><Icon name="activity" /> Agent Decision Log</h3>
+              <div className="hstack" style={{ gap: 4 }}>
+                {[["all","All"],["auto","Auto"],["escalated","Escalated"],["overridden","Overridden"]].map(([k, lbl]) => (
+                  <span key={k} className={"tab" + (outcome === k ? " active" : "")} onClick={() => setOutcome(k)} style={{ padding: "5px 10px", fontSize: 12, marginBottom: 0, borderBottom: "none", borderRadius: 8, background: outcome === k ? "var(--surface-3)" : "transparent" }}>{lbl}</span>
+                ))}
+              </div>
+            </div>
+            <div className="tbl-wrap">
+              <table className="tbl">
+                <thead><tr><th>Time</th><th>Agent</th><th>Action</th><th>Conf.</th><th>Outcome</th><th>Source</th></tr></thead>
+                <tbody>
+                  {rows.map((r, i) => (
+                    <tr key={i} style={{ cursor: "default" }}>
+                      <td><span className="mono" style={{ fontSize: 11.5 }}>{r.time}</span></td>
+                      <td>{showSignature ? <window.AgentBadge agent={r.agent.replace(" Agent", "")} small /> : <span className="t-sub">{r.agent}</span>}</td>
+                      <td><span style={{ color: "var(--tx-1)" }}>{r.action}</span>{r.by && <div className="t-sub">by {r.by}</div>}</td>
+                      <td><span className="t-amt" style={{ color: window.confColor(r.conf) }}>{r.conf}%</span></td>
+                      <td>
+                        <window.StatusPill tone={r.outcome === "auto" ? "ok" : r.outcome === "escalated" ? "warn" : "agent"}>
+                          {r.outcome === "auto" ? "Auto-executed" : r.outcome === "escalated" ? "Escalated" : "Overridden"}
+                        </window.StatusPill>
+                      </td>
+                      <td><span className="mono" style={{ fontSize: 11, color: "var(--tx-3)" }}>{r.src}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="card-h" style={{ borderTop: "1px solid var(--line-1)", borderBottom: "none", justifyContent: "center" }}>
+              <span className="audit-note"><Icon name="lock" size={13} /> Immutable SOX log · 7-year retention · exportable for audit</span>
+            </div>
+          </div>
+
+          {/* Threshold controls */}
+          <div className="card">
+            <div className="card-h">
+              <h3><Icon name="sliders" /> Confidence Thresholds</h3>
+              <window.StatusPill tone="agent" dot={false}>Co-owned w/ Controller</window.StatusPill>
+            </div>
+            <div className="card-b">
+              <p className="t-sub" style={{ marginBottom: 6, lineHeight: 1.5 }}>Above the threshold, the agent auto-executes. Below it, the item routes here for human review.</p>
+              {M.thresholds.map((t, i) => (
+                <ThreshSlider key={i} name={t.agent} desc={t.desc} value={thresholds[i]}
+                  onChange={(v) => setThresholds((arr) => arr.map((x, j) => j === i ? v : x))}
+                  onCommit={(v) => toast("Threshold updated", t.agent + " auto-approve ≥ " + v + "% · logged")} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function ThreshSlider({ name, desc, value, onChange, onCommit }) {
+    const trackRef = useRef(null);
+    const draggingRef = useRef(false);
+
+    function setFromClientX(clientX) {
+      const el = trackRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      let pct = Math.round(((clientX - rect.left) / rect.width) * 100);
+      pct = Math.max(50, Math.min(99, pct));
+      onChange(pct);
+      return pct;
+    }
+    function down(e) {
+      draggingRef.current = true;
+      setFromClientX(e.clientX ?? (e.touches && e.touches[0].clientX));
+      e.preventDefault();
+    }
+    useEffect(() => {
+      function move(e) { if (draggingRef.current) setFromClientX(e.clientX ?? (e.touches && e.touches[0].clientX)); }
+      function up() { if (draggingRef.current) { draggingRef.current = false; onCommit && onCommit(value); } }
+      window.addEventListener("mousemove", move);
+      window.addEventListener("mouseup", up);
+      window.addEventListener("touchmove", move, { passive: false });
+      window.addEventListener("touchend", up);
+      return () => {
+        window.removeEventListener("mousemove", move);
+        window.removeEventListener("mouseup", up);
+        window.removeEventListener("touchmove", move);
+        window.removeEventListener("touchend", up);
+      };
+    }, [value]);
+
+    return (
+      <div className="thresh">
+        <div className="thresh-top">
+          <div className="tl">
+            <span className="thresh-name">{name}</span>
+          </div>
+          <span className="thresh-val tnum">≥ {value}%</span>
+        </div>
+        <span className="t-sub" style={{ marginTop: -2 }}>{desc}</span>
+        <div className="thresh-track" ref={trackRef} onMouseDown={down} onTouchStart={down}>
+          <div className="thresh-rail"><i style={{ width: value + "%" }} /></div>
+          <div className="thresh-knob" style={{ left: value + "%" }} />
+        </div>
+        <div className="thresh-zones"><span>Review ↤ 50</span><span>↦ auto-execute 99</span></div>
+      </div>
+    );
+  }
+
+  window.Audit = Audit;
+})();
+
+  </script>
+  <script type="text/babel">
+/* Screen 7 — Analytics */
+(function () {
+  const { useState } = React;
+  const Icon = window.Icon;
+
+  function Analytics() {
+    const M = window.MOCK;
+    const A = M.analytics;
+    const [metric, setMetric] = useState("touchless");
+
+    const charts = {
+      touchless: { label: "Touchless Rate", data: A.touchlessTrend, color: "var(--ok)", fmt: (v) => v.toFixed(0) + "%", fill: true },
+      cost: { label: "Cost per Invoice", data: A.costPerInvoice, color: "var(--accent)", fmt: (v) => "$" + v.toFixed(2), fill: true },
+      close: { label: "Close Cycle Time", data: A.closeCycle, color: "var(--agent)", fmt: (v) => v.toFixed(1) + "d", fill: true },
+      dso: { label: "DSO", data: A.dso, color: "var(--warn)", fmt: (v) => v.toFixed(0) + "d", fill: true },
+    };
+    const c = charts[metric];
+
+    return (
+      <div className="page page-wide">
+        {/* scorecard */}
+        <div className="grid" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
+          {M.analyticsCards.map((card, i) => (
+            <div key={i} className="metric">
+              <div className="m-top">
+                <span className="m-lab">{card.label}</span>
+                <span className={"m-delta " + card.dir}><Icon name="arrowUp" size={12} />{card.delta}</span>
+              </div>
+              <div className="hstack" style={{ alignItems: "baseline", gap: 10 }}>
+                <span className="m-val tnum" style={{ fontSize: 32 }}>{card.value}</span>
+                <span className="t-sub">{card.target}</span>
+              </div>
+              <div className="vstack" style={{ gap: 5, marginTop: 2 }}>
+                <div className="conf-bar" style={{ width: "100%" }}><i style={{ width: card.pct + "%", background: card.pct >= 90 ? "var(--ok)" : "var(--accent-grad)" }} /></div>
+                <span className="t-sub">{card.pct}% to target</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid" style={{ gridTemplateColumns: "1.5fr 1fr" }}>
+          {/* main trend */}
+          <div className="card">
+            <div className="card-h">
+              <h3><Icon name="chart" /> Trend</h3>
+              <div className="hstack" style={{ gap: 4 }}>
+                {Object.entries(charts).map(([k, v]) => (
+                  <span key={k} className={"tab" + (metric === k ? " active" : "")} onClick={() => setMetric(k)} style={{ padding: "5px 10px", fontSize: 12, marginBottom: 0, borderBottom: "none", borderRadius: 8, background: metric === k ? "var(--surface-3)" : "transparent" }}>{v.label}</span>
+                ))}
+              </div>
+            </div>
+            <div className="card-b">
+              <div className="hstack" style={{ alignItems: "baseline", gap: 10, marginBottom: 10 }}>
+                <span style={{ fontWeight: 300, fontSize: 40, letterSpacing: "-.03em", color: "var(--tx-1)" }} className="tnum">{c.fmt(c.data[c.data.length - 1])}</span>
+                <span className="mono" style={{ color: c.color }}>{c.label} · trailing 12 mo</span>
+              </div>
+              <window.LineChart labels={A.months} yFmt={c.fmt} series={[{ data: c.data, color: c.color, fill: true }]} h={260} />
+            </div>
+          </div>
+
+          {/* override rate bar */}
+          <div className="card">
+            <div className="card-h">
+              <h3><Icon name="users" /> Human Override Rate</h3>
+              <span className="eyebrow">Lower is better</span>
+            </div>
+            <div className="card-b">
+              <div className="hstack" style={{ alignItems: "baseline", gap: 10, marginBottom: 10 }}>
+                <span style={{ fontWeight: 300, fontSize: 40, letterSpacing: "-.03em", color: "var(--ok)" }} className="tnum">4.6%</span>
+                <span className="mono" style={{ color: "var(--ok)" }}>−7.4 pts YoY</span>
+              </div>
+              <window.BarChart data={A.overrideRate} labels={A.months} yFmt={(v) => v.toFixed(0) + "%"} h={260}
+                color={(v) => v > 8 ? "var(--warn)" : "var(--ok)"} />
+              <p className="t-sub" style={{ marginTop: 10, lineHeight: 1.5 }}>As agents earn trust, humans override fewer decisions — the program's core trust signal.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="banner" style={{ background: "var(--agent-dim)", borderColor: "color-mix(in srgb,var(--agent) 24%,transparent)" }}>
+          <Icon name="sparkle2" size={22} style={{ color: "var(--agent-bright)" }} />
+          <div className="bt">
+            <h4>The human's job has shifted from data entry to governance</h4>
+            <p>82% of invoices now process untouched. The team's time goes to the 18% that need judgment — and to tuning the agents that handle the rest.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  window.Analytics = Analytics;
+})();
+
+  </script>
+  <script type="text/babel">
+/* Finance OS — root app, routing, state, toasts, tweaks. */
+(function () {
+  const { useState, useEffect, useCallback } = React;
+  const Icon = window.Icon;
+
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "theme": "dark",
+    "accent": ["#FF8861", "#9A6BF0", "#5F59FF"],
+    "density": "regular",
+    "font": "Hanken Grotesk",
+    "showSignature": true,
+    "liveFeed": true
+  }/*EDITMODE-END*/;
+
+  const RESOLVE_COPY = {
+    approved: ["Approved", "logged to audit trail"],
+    rejected: ["Rejected", "vendor notified · logged"],
+    adjusted: ["Adjusted & approved", "delta posted · logged"],
+    clarify: ["Clarification requested", "sent to vendor portal"],
+    escalated: ["Escalated", "routed to Controller"],
+  };
+
+  function App() {
+    const [t, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
+    const [view, setView] = useState("dashboard");
+    const [collapsed, setCollapsed] = useState(false);
+    const [toasts, setToasts] = useState([]);
+
+    // exception queue state (so approve/reject removes rows)
+    const [exceptions, setExceptions] = useState(window.MOCK.exceptions);
+    const [selectedEx, setSelectedEx] = useState(null);
+    // canonical org-wide open-exception count (table shows the priority subset)
+    const [openCount, setOpenCount] = useState(47);
+
+    const dark = t.theme !== "light";
+
+    // apply theme/density/accent/font to :root
+    useEffect(() => {
+      const root = document.documentElement;
+      root.classList.add("theme-switching");
+      root.setAttribute("data-theme", dark ? "dark" : "light");
+      root.setAttribute("data-density", t.density || "regular");
+      const acc = Array.isArray(t.accent) ? t.accent : ["#FF8861", "#9A6BF0", "#5F59FF"];
+      root.style.setProperty("--coral", acc[0]);
+      root.style.setProperty("--violet", acc[1] || acc[0]);
+      root.style.setProperty("--indigo", acc[2] || acc[1] || acc[0]);
+      root.style.setProperty("--accent", acc[2] || acc[1] || acc[0]);
+      root.style.setProperty("--agent", acc[1] || acc[0]);
+      root.style.setProperty("--grad-recognition", `linear-gradient(135deg,${acc[0]} 0%,${acc[1]||acc[0]} 52%,${acc[2]||acc[1]||acc[0]} 100%)`);
+      root.style.setProperty("--accent-grad", `linear-gradient(135deg,${acc[0]} 0%,${acc[1]||acc[0]} 52%,${acc[2]||acc[1]||acc[0]} 100%)`);
+      root.style.setProperty("--font-sans", `"${t.font}",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`);
+      requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("theme-switching")));
+    }, [dark, t.density, t.accent, t.font]);
+
+    const toast = useCallback((title, sub, tone = "ok") => {
+      const id = Date.now() + Math.random();
+      setToasts((arr) => [...arr, { id, title, sub, tone }]);
+      setTimeout(() => setToasts((arr) => arr.filter((x) => x.id !== id)), 4200);
+    }, []);
+
+    const openException = useCallback((id) => {
+      setView("exceptions");
+      setSelectedEx(id);
+    }, []);
+
+    const resolveException = useCallback((id, kind) => {
+      const ex = exceptions.find((e) => e.id === id);
+      setSelectedEx(null);
+      setOpenCount((c) => Math.max(0, c - 1));
+      setTimeout(() => {
+        setExceptions((arr) => arr.filter((e) => e.id !== id));
+      }, 280);
+      const [title, sub] = RESOLVE_COPY[kind] || ["Done", "logged"];
+      toast(title + " · " + (ex ? ex.id : ""), (ex ? ex.amountStr + " · " : "") + sub);
+    }, [exceptions, toast]);
+
+    const screen = (() => {
+      switch (view) {
+        case "dashboard": return <window.Dashboard onNav={setView} onOpenException={openException} showSignature={t.showSignature} openCount={openCount} key="dash" />;
+        case "exceptions": return <window.Exceptions rows={exceptions} selectedId={selectedEx} onSelect={setSelectedEx} onResolve={resolveException} showSignature={t.showSignature} openCount={openCount} toast={toast} key="exc" />;
+        case "cash": return <window.CashApplication showSignature={t.showSignature} toast={toast} key="cash" />;
+        case "collections": return <window.Collections showSignature={t.showSignature} key="coll" />;
+        case "anomalies": return <window.Anomalies showSignature={t.showSignature} toast={toast} key="anom" />;
+        case "audit": return <window.Audit showSignature={t.showSignature} toast={toast} key="audit" />;
+        case "analytics": return <window.Analytics key="ana" />;
+        default: return null;
+      }
+    })();
+
+    // screens that own their own scroll/drawer container
+    const selfScroll = view === "exceptions" || view === "cash";
+
+    return (
+      <div className="app">
+        <window.Sidebar active={view} onNav={(v) => { setView(v); }} collapsed={collapsed} openCount={openCount} />
+        <div className="main">
+          <window.TopBar view={view} onCollapse={() => setCollapsed((c) => !c)} dark={dark} onToggleTheme={() => setTweak("theme", dark ? "light" : "dark")} />
+          {selfScroll ? (
+            <div style={{ flex: 1, minHeight: 0, position: "relative" }} data-screen-label={view}>{screen}</div>
+          ) : (
+            <div className="canvas" data-screen-label={view}>{screen}</div>
+          )}
+        </div>
+
+        {/* Toasts */}
+        <div className="toasts">
+          {toasts.map((to) => (
+            <div className="toast" key={to.id}>
+              <div className="ti" style={{ background: to.tone === "ok" ? "rgba(91,201,140,.14)" : "var(--agent-dim)", color: to.tone === "ok" ? "var(--ok)" : "var(--agent-bright)" }}>
+                <Icon name={to.tone === "ok" ? "checkCircle" : "sparkle"} size={16} />
+              </div>
+              <div className="tx">
+                <h5>{to.title}</h5>
+                <p>{to.sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Tweaks */}
+        <window.TweaksPanel>
+          <window.TweakSection label="Appearance" />
+          <window.TweakRadio label="Theme" value={t.theme} options={["dark", "light"]} onChange={(v) => setTweak("theme", v)} />
+          <window.TweakRadio label="Density" value={t.density} options={["compact", "regular", "comfy"]} onChange={(v) => setTweak("density", v)} />
+          <window.TweakColor label="Accent (Recognition)" value={t.accent}
+            options={[["#FF8861", "#9A6BF0", "#5F59FF"], ["#5BC98C", "#3FA7A0", "#2E75B6"], ["#F0B450", "#E8836A", "#C0392B"], ["#7CA8FF", "#9A6BF0", "#C06BE0"]]}
+            onChange={(v) => setTweak("accent", v)} />
+          <window.TweakSelect label="Font" value={t.font} options={["Hanken Grotesk", "Geist Mono", "system-ui"]} onChange={(v) => setTweak("font", v)} />
+          <window.TweakSection label="Agentic signature" />
+          <window.TweakToggle label="Confidence rings & agent badges" value={t.showSignature} onChange={(v) => setTweak("showSignature", v)} />
+        </window.TweaksPanel>
+      </div>
+    );
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<App />);
+})();
+
+  </script>
+</body>
+</html>

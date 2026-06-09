@@ -1,0 +1,6 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+# The connector contracts + mock adapters live in ../../packages/connectors.
+# For a proper install: `pip install -e ../../packages/connectors`.
+# app/connectors.py also adds that path to sys.path so `uvicorn app.main:app` works without install.

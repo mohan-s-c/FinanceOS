@@ -1,0 +1,13 @@
+[project]
+name = "financeos-connectors"
+version = "0.0.0"
+description = "Abstract connector contracts (ERP, bank/payments, ingestion/OCR) + mock adapters for Finance OS / APAR."
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["financeos_connectors", "financeos_connectors.mock"]

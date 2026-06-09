@@ -1,0 +1,6 @@
+[project]
+name = "financeos-api"
+version = "0.0.0"
+description = "FastAPI BFF for Finance OS / APAR (V2)."
+requires-python = ">=3.10"
+dependencies = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "pydantic>=2.6"]

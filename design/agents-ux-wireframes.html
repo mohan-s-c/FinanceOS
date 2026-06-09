@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Finance OS / APAR — Agents UX Wireframes (V2)</title>
+<style>
+  :root{
+    --bg:#130F0B;--surface:#1B150F;--s2:#221A12;--s3:#2E2418;--hover:#3A2E1E;
+    --line:rgba(244,236,224,.10);--line2:rgba(244,236,224,.18);
+    --tx1:#F4ECE0;--tx2:rgba(244,236,224,.66);--tx3:rgba(244,236,224,.42);--tx4:rgba(244,236,224,.24);
+    --amber:#E8A33D;--grad:linear-gradient(135deg,#F5C06A,#F0934E 55%,#FF8861);
+    --agent:#B79BF7;--agentdim:rgba(154,107,240,.16);
+    --ok:#5BC98C;--warn:#F0B450;--bad:#F26A5A;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0c0a07;color:var(--tx1);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding:40px 28px 80px}
+  .deck{max-width:1340px;margin:0 auto;display:flex;flex-direction:column;gap:54px}
+  .deckhead{display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line);padding-bottom:22px}
+  .deckhead h1{font-size:26px;font-weight:600;letter-spacing:-.02em}
+  .deckhead p{color:var(--tx2);font-size:14px;max-width:780px;line-height:1.55}
+  .kbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .kchip{font-family:var(--mono);font-size:11px;color:var(--tx2);background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+  .kchip b{color:var(--amber);font-weight:600}
+  .frame{display:flex;flex-direction:column;gap:12px}
+  .cap{display:flex;align-items:baseline;gap:12px}
+  .cap .n{font-family:var(--mono);font-size:12px;color:var(--bg);background:var(--amber);border-radius:6px;padding:2px 8px;font-weight:600}
+  .cap h2{font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .cap p{color:var(--tx3);font-size:13px}
+  .screen{background:var(--bg);border:1px solid var(--line2);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+  .winbar{height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+  .winbar i{width:11px;height:11px;border-radius:50%;background:var(--s3)}
+  .winbar .url{margin-left:12px;font-family:var(--mono);font-size:11px;color:var(--tx3)}
+  .app{display:flex;min-height:600px}
+  .sb{width:206px;flex:0 0 206px;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px 0}
+  .brand{display:flex;align-items:center;gap:10px;padding:4px 16px 14px}
+  .mark{width:26px;height:26px;border-radius:7px;background:var(--grad);flex:0 0 auto}
+  .brand .bt{display:flex;flex-direction:column;line-height:1.15}
+  .brand .bt b{font-family:var(--mono);font-size:14px;letter-spacing:.04em}
+  .brand .bt small{font-size:9px;letter-spacing:.18em;color:var(--tx3)}
+  .ver{align-self:flex-start;margin-top:3px;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--amber);background:rgba(232,163,61,.16);padding:1px 6px;border-radius:999px}
+  .grp{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--tx4);text-transform:uppercase;padding:14px 22px 6px}
+  .nav{display:flex;flex-direction:column;gap:2px;padding:0 10px}
+  .ni{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:8px;color:var(--tx2);font-size:13px;font-weight:500;position:relative}
+  .ni .ico{width:15px;height:15px;border-radius:4px;border:1.5px solid currentColor;opacity:.7;flex:0 0 auto}
+  .ni.on{background:var(--s3);color:var(--tx1)}
+  .ni.on::before{content:"";position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:3px;height:17px;border-radius:0 3px 3px 0;background:var(--grad)}
+  .ni .bdg{margin-left:auto;font-family:var(--mono);font-size:10px;padding:1px 7px;border-radius:999px;background:var(--agentdim);color:var(--agent)}
+  .ni .bdg.w{background:rgba(240,180,80,.16);color:var(--warn)}
+  .sb .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 16px 2px;border-top:1px solid var(--line)}
+  .ava{width:30px;height:30px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:11px;font-weight:600;color:#2a1c0a}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .top{height:56px;display:flex;align-items:center;gap:14px;padding:0 22px;border-bottom:1px solid var(--line)}
+  .top .ey{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--tx3);text-transform:uppercase}
+  .top h3{font-size:17px;font-weight:600}
+  .top .right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx2);background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+  .sw{width:30px;height:17px;border-radius:999px;background:var(--s3);position:relative;flex:0 0 auto}
+  .sw i{position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:var(--tx1)}
+  .sw.on{background:rgba(91,201,140,.4)} .sw.on i{left:15px;background:var(--ok)}
+  .sw.kill.on{background:rgba(242,106,90,.45)} .sw.kill.on i{background:var(--bad)}
+  .body{padding:16px 20px;display:flex;flex-direction:column;gap:14px;flex:1}
+  .stripe{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+  .stat .l{font-size:10.5px;color:var(--tx3)} .stat .v{font-size:22px;font-weight:300;letter-spacing:-.02em;margin-top:4px} .stat .v small{font-size:12px;color:var(--tx3)}
+  .stat .d{font-family:var(--mono);font-size:10px;margin-top:3px} .up{color:var(--ok)} .dn{color:var(--bad)} .fl{color:var(--tx3)}
+  .split{display:grid;grid-template-columns:312px 1fr;gap:14px;align-items:start}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .ph{font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+  .ph .eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--tx3);text-transform:uppercase;font-weight:500}
+  .rlist{display:flex;flex-direction:column;gap:7px}
+  .row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--s2)}
+  .row.sel{border-color:var(--amber);background:var(--s3)}
+  .aico{width:30px;height:30px;border-radius:8px;background:var(--agentdim);color:var(--agent);display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:600;flex:0 0 auto}
+  .row .rn{font-size:12.5px;font-weight:600} .row .rs{font-size:10px;color:var(--tx3);display:flex;align-items:center;gap:5px;margin-top:1px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--ok)} .dot.warn{background:var(--warn)} .dot.idle{background:var(--tx4)} .dot.bad{background:var(--bad)}
+  .row .rr{margin-left:auto;display:flex;align-items:center;gap:9px}
+  .modetag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:999px}
+  .modetag.auto{color:var(--ok);background:rgba(91,201,140,.12)} .modetag.sg{color:var(--warn);background:rgba(240,180,80,.12)}
+  .ring{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:10px;position:relative;flex:0 0 auto}
+  .ring::before{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--s3)}
+  .ring.lg{width:38px;height:38px;font-size:11px} .ring.lg::before{background:var(--surface);inset:4px}
+  .ring span{position:relative;z-index:1}
+  .detail{display:flex;flex-direction:column;gap:14px}
+  .dethead{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:12px}
+  .dethead .aico{width:36px;height:36px}
+  .dethead .dn{font-size:15px;font-weight:600} .dethead .ds{font-size:11px;color:var(--tx3);margin-top:2px}
+  .dethead .right{margin-left:auto;display:flex;align-items:center;gap:9px}
+  .pipe{display:flex;align-items:stretch;gap:0}
+  .step{flex:1;background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:11px;display:flex;flex-direction:column;gap:6px}
+  .step .sl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3)}
+  .step .sv{font-size:19px;font-weight:300} .step .ss{font-size:10px;color:var(--tx3)}
+  .arrow{align-self:center;color:var(--tx4);font-size:15px;padding:0 6px}
+  .step.act{border-color:rgba(91,201,140,.4)} .step.esc{border-color:rgba(240,180,80,.45)}
+  .two{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;align-items:start}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx4);padding:7px 9px;border-bottom:1px solid var(--line)}
+  td{padding:9px;border-bottom:1px solid var(--line);color:var(--tx2);vertical-align:middle} tr:last-child td{border-bottom:none}
+  .mono{font-family:var(--mono)} .tx1{color:var(--tx1)}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px}
+  .pill.ok{background:rgba(91,201,140,.14);color:var(--ok)} .pill.warn{background:rgba(240,180,80,.14);color:var(--warn)} .pill.bad{background:rgba(242,106,90,.14);color:var(--bad)} .pill.agent{background:var(--agentdim);color:var(--agent)}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;padding:3px 8px;border-radius:7px;background:var(--s3);border:1px solid var(--line);color:var(--tx2)} .chip .ct{font-family:var(--mono);font-size:9px;color:var(--tx4)}
+  .thr{margin:2px 0 8px} .thr .tl{display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-bottom:6px} .thr .tl b{font-family:var(--mono);color:var(--amber);font-size:13px}
+  .rail{height:6px;border-radius:999px;background:var(--s3);position:relative} .rail i{position:absolute;left:0;top:0;height:100%;border-radius:999px;background:var(--grad)} .rail .knob{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--amber);transform:translate(-50%,-50%)}
+  .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:11px} .kpi{background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:10px 11px} .kpi .l{font-size:10px;color:var(--tx3)} .kpi .v{font-size:18px;font-weight:300;margin-top:3px}
+  .note{font-size:11px;color:var(--tx3);display:flex;align-items:center;gap:7px} .note b{color:var(--tx1)}
+  .touch3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .mockcap{font-size:11px;color:var(--tx3);margin-top:8px;line-height:1.5} .mockcap b{color:var(--tx1)}
+  .recbox{background:var(--agentdim);border:1px solid rgba(154,107,240,.3);border-radius:11px;padding:13px} .recbox .rh{display:flex;align-items:center;gap:9px;margin-bottom:9px} .recbox .prop{font-size:13px;color:var(--tx1);font-weight:600} .recbox p{font-size:11.5px;color:var(--tx2);line-height:1.5;margin:7px 0 11px}
+  .btnrow{display:flex;gap:7px} .btn{font-size:11.5px;font-weight:600;border-radius:8px;padding:7px 12px;border:1px solid var(--line2);color:var(--tx1);background:var(--s3)} .btn.ok{background:rgba(91,201,140,.16);color:var(--ok);border-color:transparent} .btn.ghost{background:transparent}
+  .gauge{display:flex;align-items:center;gap:13px} .gnum{font-size:30px;font-weight:300;letter-spacing:-.02em}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="deckhead">
+    <h1>Agents in the V2 app — UX wireframes <span style="font-size:13px;color:var(--amber);font-family:var(--mono)">· rev 2</span></h1>
+    <p>Updated per your calls: a <b style="color:var(--tx1)">single Agents screen</b> — the roster and the per-agent detail live together as master-detail (pick an agent on the left, it expands on the right; no separate page). The <b style="color:var(--tx1)">Anomaly agent appears here and</b> stays under Anomalies &amp; Leakage. Mid-fidelity, Espresso theme, placeholder data.</p>
+    <div class="kbar">
+      <span class="kchip">layout <b>one screen · master-detail</b></span>
+      <span class="kchip">anomaly agent <b>cross-listed</b></span>
+      <span class="kchip">theme <b>Espresso</b></span>
+      <span class="kchip">every action <b>gated + logged</b></span>
+    </div>
+  </div>
+
+  <!-- ===== FRAME 1 — UNIFIED AGENTS SCREEN (master-detail) ===== -->
+  <div class="frame">
+    <div class="cap"><span class="n">01</span><h2>Agents — one screen</h2><p>roster on the left, the selected agent expands on the right</p></div>
+    <div class="screen">
+      <div class="winbar"><i></i><i></i><i></i><span class="url">financeos / app — Agents</span></div>
+      <div class="app">
+        <aside class="sb">
+          <div class="brand"><div class="mark"></div><div class="bt"><b>APAR</b><small>FINANCEOS</small><span class="ver">V2.0</span></div></div>
+          <div class="grp">Overview</div>
+          <div class="nav"><div class="ni"><span class="ico"></span>Command Center</div></div>
+          <div class="grp">Accounts Payable</div>
+          <div class="nav"><div class="ni"><span class="ico"></span>Exception Queue<span class="bdg w">47</span></div></div>
+          <div class="grp">Accounts Receivable</div>
+          <div class="nav"><div class="ni"><span class="ico"></span>Cash Application<span class="bdg w">6</span></div><div class="ni"><span class="ico"></span>Collections</div></div>
+          <div class="grp">Autonomy</div>
+          <div class="nav">
+            <div class="ni on"><span class="ico"></span>Agents<span class="bdg">9</span></div>
+            <div class="ni"><span class="ico"></span>Anomalies &amp; Leakage<span class="bdg w">5</span></div>
+            <div class="ni"><span class="ico"></span>Agent &amp; Audit Trail</div>
+            <div class="ni"><span class="ico"></span>Analytics</div>
+          </div>
+          <div class="me"><div class="ava">DO</div><div class="bt"><b style="font-size:12px">Dana Okafor</b><small style="color:var(--tx3)">AP/AR Analyst</small></div></div>
+        </aside>
+        <div class="main">
+          <div class="top">
+            <div><div class="ey">Autonomy / Agents</div><h3>Agents</h3></div>
+            <div class="right">
+              <span class="toggle">Global suggest-only (kill switch) <span class="sw kill"><i></i></span></span>
+              <span class="toggle">All nominal <span class="dot"></span></span>
+            </div>
+          </div>
+          <div class="body">
+            <div class="stripe">
+              <div class="stat"><div class="l">Active agents</div><div class="v">9</div><div class="d fl">2 suggest-only</div></div>
+              <div class="stat"><div class="l">Auto-actions today</div><div class="v">1,042</div><div class="d up">+11%</div></div>
+              <div class="stat"><div class="l">Escalated to you</div><div class="v">47</div><div class="d dn">+11</div></div>
+              <div class="stat"><div class="l">Touchless rate</div><div class="v">82<small>%</small></div><div class="d up">+4.1 pts</div></div>
+              <div class="stat"><div class="l">Avg confidence</div><div class="v">91<small>%</small></div><div class="d up">+1.4</div></div>
+            </div>
+
+            <div class="split">
+              <!-- LEFT: roster -->
+              <div class="panel">
+                <div class="ph">Roster <span class="eyebrow">9 agents</span></div>
+                <div class="rlist">
+                  <div class="row sel"><div class="aico">AP</div><div><div class="rn">AP Matching</div><div class="rs"><span class="dot warn"></span>Suggest-only</div></div><div class="rr"><span class="modetag sg">≥85</span><div class="ring" style="background:conic-gradient(var(--warn) 72%,var(--s3) 0)"><span>72</span></div></div></div>
+                  <div class="row"><div class="aico">CA</div><div><div class="rn">Cash Application</div><div class="rs"><span class="dot"></span>Auto</div></div><div class="rr"><span class="modetag auto">≥90</span><div class="ring" style="background:conic-gradient(var(--ok) 93%,var(--s3) 0)"><span>93</span></div></div></div>
+                  <div class="row"><div class="aico">AN</div><div><div class="rn">Anomaly Detection</div><div class="rs"><span class="dot bad"></span>Flag-only · also in Anomalies</div></div><div class="rr"><span class="modetag auto">flag</span><div class="ring" style="background:conic-gradient(var(--bad) 41%,var(--s3) 0)"><span>41</span></div></div></div>
+                  <div class="row"><div class="aico">CO</div><div><div class="rn">Collections</div><div class="rs"><span class="dot"></span>Auto · draft</div></div><div class="rr"><span class="modetag auto">≥80</span><div class="ring" style="background:conic-gradient(var(--ok) 84%,var(--s3) 0)"><span>84</span></div></div></div>
+                  <div class="row"><div class="aico">PA</div><div><div class="rn">Payment Run</div><div class="rs"><span class="dot"></span>Auto</div></div><div class="rr"><span class="modetag auto">≥95</span><div class="ring" style="background:conic-gradient(var(--ok) 99%,var(--s3) 0)"><span>99</span></div></div></div>
+                  <div class="row"><div class="aico">IN</div><div><div class="rn">Invoice Ingestion</div><div class="rs"><span class="dot"></span>Auto · OCR</div></div><div class="rr"><span class="modetag auto">≥88</span><div class="ring" style="background:conic-gradient(var(--ok) 93%,var(--s3) 0)"><span>93</span></div></div></div>
+                  <div class="row"><div class="aico">RC</div><div><div class="rn">Revenue Classification</div><div class="rs"><span class="dot"></span>Auto · ASC 606</div></div><div class="rr"><span class="modetag auto">≥88</span><div class="ring" style="background:conic-gradient(var(--ok) 95%,var(--s3) 0)"><span>95</span></div></div></div>
+                  <div class="row"><div class="aico">CF</div><div><div class="rn">Cash Flow Forecast</div><div class="rs"><span class="dot idle"></span>Advisory</div></div><div class="rr"><span class="modetag auto">model</span><div class="ring" style="background:conic-gradient(var(--ok) 90%,var(--s3) 0)"><span>90</span></div></div></div>
+                </div>
+              </div>
+
+              <!-- RIGHT: detail of selected -->
+              <div class="detail">
+                <div class="dethead">
+                  <div class="aico">AP</div>
+                  <div><div class="dn">AP Matching Agent</div><div class="ds">3-way match · suggest-only · last action 1 min ago</div></div>
+                  <div class="right"><span class="toggle">Suggest-only <span class="sw"><i></i></span> Auto</span><span class="toggle">Pause <span class="sw kill"><i></i></span></span></div>
+                </div>
+
+                <div class="panel">
+                  <div class="ph">Pipeline — today <span class="eyebrow">Intake → Match → Decide → Act → Audit</span></div>
+                  <div class="pipe">
+                    <div class="step"><span class="sl">Intake</span><span class="sv">1,284</span><span class="ss">ingested (OCR)</span></div><span class="arrow">›</span>
+                    <div class="step"><span class="sl">Match</span><span class="sv">1,284</span><span class="ss">PO · GR · invoice</span></div><span class="arrow">›</span>
+                    <div class="step"><span class="sl">Decide</span><span class="sv">1,042<span style="font-size:10px;color:var(--tx3)"> /242</span></span><span class="ss">clean / reasoned</span></div><span class="arrow">›</span>
+                    <div class="step act"><span class="sl">Act</span><span class="sv" style="color:var(--ok)">1,042</span><span class="ss">auto in tol.</span></div><span class="arrow">›</span>
+                    <div class="step esc"><span class="sl">Escalate</span><span class="sv" style="color:var(--warn)">47</span><span class="ss">to analyst</span></div>
+                  </div>
+                </div>
+
+                <div class="two">
+                  <div class="panel">
+                    <div class="ph">Recent decisions <span class="eyebrow">reason + sources</span></div>
+                    <table>
+                      <thead><tr><th>Invoice</th><th>Rec.</th><th>Conf</th><th>Why</th><th>Grounded</th></tr></thead>
+                      <tbody>
+                        <tr><td class="mono tx1">INV-44821</td><td><span class="pill ok">Approve</span></td><td class="mono">96</td><td>3-way clean, in tolerance</td><td><span class="chip"><span class="ct">PO</span>3360</span></td></tr>
+                        <tr><td class="mono tx1">INV-44903</td><td><span class="pill warn">Escalate</span></td><td class="mono">61</td><td>+12% &gt; 5% ceiling</td><td><span class="chip"><span class="ct">CTR</span>0142</span></td></tr>
+                        <tr><td class="mono tx1">INV-44912</td><td><span class="pill warn">Escalate</span></td><td class="mono">72</td><td>&gt; $20k capex sign-off</td><td><span class="chip"><span class="ct">POL</span>11</span></td></tr>
+                        <tr><td class="mono tx1">INV-44888</td><td><span class="pill bad">Reject</span></td><td class="mono">41</td><td>98% duplicate</td><td><span class="chip"><span class="ct">INV</span>44602</span></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div>
+                    <div class="panel">
+                      <div class="ph">Threshold <span class="eyebrow">versioned</span></div>
+                      <div class="thr"><div class="tl"><span>Auto-approve at</span><b>85%</b></div><div class="rail"><i style="width:85%"></i><span class="knob" style="left:85%"></span></div></div>
+                      <div class="note" style="border-top:1px solid var(--line);padding-top:10px"><span class="dot bad"></span>Always escalate above <b>$20,000</b><span class="sw on" style="margin-left:auto"><i></i></span></div>
+                      <div class="kpis">
+                        <div class="kpi"><div class="l">Auto-action</div><div class="v" style="color:var(--ok)">82%</div></div>
+                        <div class="kpi"><div class="l">Override</div><div class="v">4.6%</div></div>
+                        <div class="kpi"><div class="l">Avg conf</div><div class="v">91%</div></div>
+                        <div class="kpi"><div class="l">Saved/inv</div><div class="v">3.2h</div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FRAME 2 — INTEGRATION TOUCHPOINTS ===== -->
+  <div class="frame">
+    <div class="cap"><span class="n">02</span><h2>Integration touchpoints</h2><p>one Agents entry; the Anomaly agent is cross-listed under Anomalies &amp; Leakage</p></div>
+    <div class="screen"><div class="winbar"><i></i><i></i><i></i><span class="url">financeos / app — where agents show up</span></div>
+      <div style="padding:20px"><div class="touch3">
+        <div class="panel">
+          <div class="ph">A · Sidebar entry <span class="eyebrow">single screen</span></div>
+          <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 8px">
+            <div class="grp" style="padding:6px 14px 6px">Autonomy</div>
+            <div class="nav"><div class="ni on"><span class="ico"></span>Agents<span class="bdg">9</span></div><div class="ni"><span class="ico"></span>Anomalies &amp; Leakage<span class="bdg w">5</span></div><div class="ni"><span class="ico"></span>Agent &amp; Audit Trail</div></div>
+          </div>
+          <div class="mockcap">One <b>Agents</b> destination. The Anomaly Detection agent lives in the roster <b>and</b> stays under Anomalies &amp; Leakage (deep-links between them).</div>
+        </div>
+        <div class="panel">
+          <div class="ph">B · Command Center strip <span class="eyebrow">at-a-glance</span></div>
+          <div style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px"><span style="font-size:12px;font-weight:600">Agents at work</span><span style="font-family:var(--mono);font-size:10px;color:var(--agent)">live ●</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px"><span class="chip"><span class="dot"></span>AP Matching</span><span class="chip"><span class="dot"></span>Cash App</span><span class="chip"><span class="dot bad"></span>Anomaly · 5</span><span class="chip"><span class="dot"></span>Collections</span></div>
+            <div class="gauge"><div class="gnum">82<span style="font-size:14px;color:var(--tx3)">%</span></div><div><div style="font-size:11px;color:var(--tx2)">touchless today</div><div class="rail" style="width:120px;margin-top:6px"><i style="width:82%"></i></div></div></div>
+          </div>
+          <div class="mockcap">A compact band on the home view — agent chips + touchless gauge, one click into the console.</div>
+        </div>
+        <div class="panel">
+          <div class="ph">C · Exception drawer <span class="eyebrow">human-in-the-loop</span></div>
+          <div class="recbox">
+            <div class="rh"><span class="pill agent">AP Matching Agent</span><span class="ring" style="background:conic-gradient(var(--bad) 41%,var(--s3) 0)"><span>41</span></span></div>
+            <div class="prop">Recommends: Reject — duplicate</div>
+            <p>98% similarity to INV-44602 (paid May 9). Same vendor, amount, window.</p>
+            <div class="btnrow"><span class="btn ok">Accept</span><span class="btn">Override</span><span class="btn ghost">Adjust</span></div>
+          </div>
+          <div class="mockcap">In the Exception Queue drawer, the agent's call + confidence pre-fills the resolve actions.</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div style="color:var(--tx3);font-size:12px;border-top:1px solid var(--line);padding-top:18px;line-height:1.6">
+    Decisions applied: <b style="color:var(--tx2)">single Agents screen</b> (master-detail, no separate route) · <b style="color:var(--tx2)">Anomaly agent cross-listed</b> (Agents roster + Anomalies &amp; Leakage). Placeholder data from the V1 mock + V2 design spec; thresholds editable &amp; versioned (Phase 1).
+  </div>
+
+</div>
+</body>
+</html>
