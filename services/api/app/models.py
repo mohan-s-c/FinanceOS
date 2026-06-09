@@ -309,3 +309,11 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     token: str
     user: AuthUser
+
+
+class ExceptionExplanation(BaseModel):
+    id: str
+    narrative: str
+    suggestedAction: str
+    model: str
+    grounded: list[Source]

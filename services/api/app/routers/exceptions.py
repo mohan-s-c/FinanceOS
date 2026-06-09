@@ -5,7 +5,7 @@ from .. import auth, store as _store
 from ..config import settings
 
 from .. import store
-from ..models import AuditEntry, Exception, ExceptionList, ResolveRequest, ResolveResponse
+from ..models import AuditEntry, Exception, ExceptionExplanation, ExceptionList, ResolveRequest, ResolveResponse
 
 router = APIRouter(prefix="/api", tags=["exceptions"])
 
@@ -36,6 +36,15 @@ def resolve_exception(exception_id: str, req: ResolveRequest, user: dict = Depen
         raise HTTPException(status_code=404, detail=f"exception {exception_id} not found")
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+
+
+@router.get("/exceptions/{exception_id}/explain", response_model=ExceptionExplanation)
+def explain_exception(exception_id: str) -> ExceptionExplanation:
+    """LLM-assisted (or offline-narrator) explanation + suggested disposition."""
+    e = store.explain_exception(exception_id)
+    if e is None:
+        raise HTTPException(status_code=404, detail=f"exception {exception_id} not found")
+    return e
 
 
 @router.get("/audit", response_model=list[AuditEntry])

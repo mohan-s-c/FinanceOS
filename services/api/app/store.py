@@ -61,3 +61,12 @@ def send_collection(cid: str, by: str | None = None):
     from .models import SendResponse, AuditEntry
     r = repo.send_collection(cid, by)
     return SendResponse(id=r["id"], status=r["status"], audit=AuditEntry(**r["audit"]))
+
+
+def explain_exception(exception_id: str):
+    from .models import ExceptionExplanation
+    from financeos_agents.reasoning import explain_exception as _explain
+    raw = repo.get_exception(exception_id)
+    if raw is None:
+        return None
+    return ExceptionExplanation(**_explain(raw))

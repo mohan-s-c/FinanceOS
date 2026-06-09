@@ -5,7 +5,7 @@
  * `offline` flag lets the UI surface which mode it's in. */
 
 import { MOCK } from "../data/mock";
-import type { Exception, ResolutionKind, AuditEntry } from "@financeos/shared";
+import type { Exception, ResolutionKind, AuditEntry, ExceptionExplanation } from "@financeos/shared";
 import type { Agent, AgentSummary, AgentFleetStats, AgentMode } from "@financeos/shared";
 import type { Deposit, DepositDetail, DepositList, ApplyResponse } from "@financeos/shared";
 import type { Collection, CollectionDetail, CollectionList, SendResponse } from "@financeos/shared";
@@ -175,4 +175,10 @@ export async function ingestCsv(kind: "ap" | "ar-invoices" | "ar-deposits" | "co
 export async function fetchTemplate(kind: string): Promise<string | null> {
   try { const res = await fetch(`${BASE}/api/ingest/template/${kind}`); return res.ok ? await res.text() : null; }
   catch { return null; }
+}
+
+
+/** LLM-assisted (or offline-narrator) explanation for an exception. */
+export async function fetchExplanation(id: string): Promise<ExceptionExplanation | null> {
+  try { return await http<ExceptionExplanation>(`/api/exceptions/${id}/explain`); } catch { return null; }
 }

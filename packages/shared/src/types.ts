@@ -101,3 +101,12 @@ export interface AnalyticsLive {
   touchlessSession: number; overrideSession: number; openExceptions: number; unappliedTotal: string;
 }
 export interface AnalyticsResp { analytics: Analytics; cards: AnalyticsCard[]; live: AnalyticsLive; }
+
+/* ---- LLM-assisted exception reasoning ---- */
+export interface ExceptionExplanation {
+  id: string;
+  narrative: string;
+  suggestedAction: string;
+  model: string;
+  grounded: Source[];
+}

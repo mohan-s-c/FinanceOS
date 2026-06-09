@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { CsvImport } from '../components/CsvImport';
 import { Icon } from '../components/Icon';
 import { ConfidenceRing, AgentBadge, SourceChip, StatusPill } from '../components';
 import type { Exception } from '../data/mock';
+import type { ExceptionExplanation } from '@financeos/shared';
+import { fetchExplanation } from '../api/client';
 
 interface Props {
   rows: Exception[];
@@ -110,6 +112,9 @@ function MiniStat({ label, value, icon }: { label: string; value: string|number;
 }
 
 function ExceptionDrawer({ row, onClose, onResolve }: { row: Exception|null; onClose: () => void; onResolve: (id: string, kind: string) => void }) {
+  const [exp, setExp] = useState<ExceptionExplanation | null>(null);
+  const [loadingExp, setLoadingExp] = useState(false);
+  useEffect(() => { setExp(null); setLoadingExp(false); }, [row?.id]);
   if (!row) return <div className="drawer" />;
   const m = row.match;
   return (
@@ -157,6 +162,21 @@ function ExceptionDrawer({ row, onClose, onResolve }: { row: Exception|null; onC
             </div>
           );
         })()}
+
+        <div className="dsec">
+          <div className="spread"><span className="eyebrow">AI explanation</span>{exp && <span className="t-sub t-mono">{exp.model}</span>}</div>
+          {exp ? (
+            <>
+              <p className="rq" style={{ marginTop: 8 }}>{exp.narrative}</p>
+              <div className="hstack" style={{ marginTop: 8 }}><StatusPill tone="agent" dot={false}>Suggested: {exp.suggestedAction}</StatusPill></div>
+            </>
+          ) : (
+            <button className="btn btn-quiet btn-sm" style={{ marginTop: 8 }} disabled={loadingExp}
+              onClick={async () => { setLoadingExp(true); setExp(await fetchExplanation(row.id)); setLoadingExp(false); }}>
+              <Icon name="sparkle2" size={14} /> {loadingExp ? 'Thinking…' : 'Explain with AI'}
+            </button>
+          )}
+        </div>
 
         {/* Extracted invoice data */}
         <div className="dsec">
