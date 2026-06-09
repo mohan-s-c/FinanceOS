@@ -32,6 +32,23 @@ class ThreeWayMatch(unittest.TestCase):
         self.assertTrue(r["match"]["po"].get("mismatch"))
         self.assertLess(r["confidence"], 60)
 
+    def test_missing_po_under_threshold_not_clean(self):
+        # No PO + partial GR, under the $10k policy threshold -> NOT a clean match.
+        inv = {"id": "INV-7002", "vendor": "Vendor X", "amount": 5000, "po_ref": None}
+        r = three_way_match(inv, None, {"status": "partial"}, POL)
+        self.assertEqual(r["recommendation"], "escalate")
+        self.assertIn("Missing PO", r["reason"])
+        self.assertFalse(r["withinTolerance"])
+        self.assertLess(r["confidence"], 90)
+
+    def test_goods_receipt_incomplete(self):
+        # PO + within tolerance, but goods receipt only partial -> escalate, not clean.
+        inv = {"id": "INV-7003", "vendor": "Vendor Y", "amount": 4200, "po_ref": "PO-7"}
+        po = {"id": "PO-7", "total": 4200, "variance_ceiling": 0.05}
+        r = three_way_match(inv, po, {"status": "partial"}, POL)
+        self.assertEqual(r["recommendation"], "escalate")
+        self.assertIn("Goods receipt", r["reason"])
+
     def test_over_approval_limit_clean(self):
         inv = {"id": "INV-4", "vendor": "Brightline", "amount": 24680, "po_ref": "PO-4"}
         po = {"id": "PO-4", "total": 24680, "variance_ceiling": 0.05}

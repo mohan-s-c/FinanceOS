@@ -41,9 +41,17 @@ def generate_exceptions_from(docs: list[dict], policies: dict, paid: list[dict],
     """Same pipeline, but over explicitly-provided data (e.g. an uploaded CSV)."""
     gate = ThresholdGate(agent=AGENT_NAME, threshold=threshold, suggest_only=suggest_only)
     out: list[dict] = []
+    seen: dict = {}  # (vendor, amount) -> first invoice id, for intra-batch duplicate detection
     for d in docs:
         inv = d["invoice"]
-        r = three_way_match(inv, d.get("po"), d.get("gr"), policies, paid)
+        key = ((inv.get("vendor") or "").strip().lower(), round(float(inv.get("amount") or 0), 2))
+        eff_paid = list(paid)
+        if key in seen:
+            # a prior invoice in this batch has the same vendor + amount -> flag this one as a duplicate
+            eff_paid.append({"id": seen[key], "vendor": inv.get("vendor", ""), "amount": float(inv.get("amount") or 0), "similarity": 96})
+        else:
+            seen[key] = inv["id"]
+        r = three_way_match(inv, d.get("po"), d.get("gr"), policies, eff_paid)
         auto = r["recommendation"] == "approve" and gate.should_auto_act(r["confidence"])
         status = "Auto-approved" if auto else "Needs Review"
         out.append(_exception_from(inv, r, status))

@@ -58,10 +58,13 @@ def three_way_match(
 
     # ---- missing PO ----
     po_required_above = float(policies.get("po_required_above", 10000))
-    if not po_found and inv_total > po_required_above:
-        issues.append("Missing PO reference")
-        penalty += 52
-        sources.append({"type": "Policy", "ref": policies.get("po_policy_ref", "AP-POL-07"), "note": f"PO threshold {fmt(po_required_above)}"})
+    if not po_found:
+        # No PO ⇒ a 3-way match is impossible; always a finding (severity scales with amount).
+        if inv_total > po_required_above:
+            penalty += 52
+            sources.append({"type": "Policy", "ref": policies.get("po_policy_ref", "AP-POL-07"), "note": f"PO threshold {fmt(po_required_above)}"})
+        else:
+            penalty += 30
 
     # ---- price variance vs PO ----
     variance_pct = 0.0
@@ -86,8 +89,8 @@ def three_way_match(
 
     # ---- goods receipt ----
     gr_ok = gr_status == "received"
-    if po_found and not gr_ok and gr_status != "none":
-        penalty += 8
+    if not gr_ok:
+        penalty += 12
 
     # ---- approval limit (even a clean match needs sign-off) ----
     capex_above = float(policies.get("capex_signoff_above", 20000))
@@ -107,11 +110,17 @@ def three_way_match(
                      f"({sim}% similarity on vendor, amount, service window). High-confidence duplicate.")
         sources.insert(0, {"type": "Invoice", "ref": p["id"], "note": "prior payment"})
         within_tol = False
-    elif not po_found and inv_total > po_required_above:
-        recommendation, tone = "hold", "bad"
-        reason = "Missing PO reference"
-        reasoning = (f"No purchase-order reference matched this invoice. Policy requires a PO for "
-                     f"invoices above {fmt(po_required_above)} (this is {fmt(inv_total)}).")
+    elif not po_found:
+        if inv_total > po_required_above:
+            recommendation, tone = "hold", "bad"
+            reason = "Missing PO reference"
+            reasoning = (f"No purchase-order reference matched this invoice. Policy requires a PO for "
+                         f"invoices above {fmt(po_required_above)} (this is {fmt(inv_total)}).")
+        else:
+            recommendation, tone = "escalate", "warn"
+            reason = "Missing PO reference"
+            reasoning = (f"No purchase order to 3-way match against ({fmt(inv_total)}); under the "
+                         f"{fmt(po_required_above)} PO-required threshold, but still routed for review.")
         within_tol = False
     elif any(i.startswith("Price variance") for i in issues):
         recommendation, tone = "escalate", "warn"
@@ -124,6 +133,12 @@ def three_way_match(
         reason = "Tax jurisdiction mismatch"
         reasoning = (f"Tax of {fmt(float(invoice.get('tax', 0)))} was applied, but the ship-to maps to a "
                      f"tax-exempt lease. Expected tax is $0.00.")
+        within_tol = False
+    elif not gr_ok:
+        recommendation, tone = "escalate", "warn"
+        reason = "Goods receipt incomplete"
+        reasoning = (f"Goods receipt is '{gr_status}' — full receipt can't be confirmed, so the invoice "
+                     f"can't be cleanly matched. Routed for review.")
         within_tol = False
     elif over_limit:
         recommendation, tone = "escalate", "warn"
