@@ -24,3 +24,6 @@ venv/
 .test_write
 /services/api/dep.json
 /services/api/exc.json
+
+# Claude Code local config
+.claude/
