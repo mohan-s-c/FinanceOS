@@ -243,3 +243,14 @@ def get_dataset(key: str):
     with session() as c:
         row = c.execute("SELECT payload FROM datasets WHERE key=?", (key,)).fetchone()
     return json.loads(row["payload"]) if row else None
+
+
+def replace_collections(records: list[dict]) -> None:
+    with session() as c:
+        c.execute("DELETE FROM collections")
+        for col in records:
+            c.execute("INSERT OR REPLACE INTO collections (id, state, risk, payload) VALUES (?,?,?,?)",
+                      (col["id"], "pending", col["risk"], json.dumps(col)))
+        _add_audit(c, {"time": time.strftime("%H:%M:%S"), "agent": "Collections Agent",
+                       "action": f"Imported {len(records)} overdue accounts (CSV)", "conf": 0,
+                       "outcome": "config", "src": "Ingest", "by": "D. Okafor"})

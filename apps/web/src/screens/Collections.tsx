@@ -3,6 +3,7 @@ import { Icon } from '../components/Icon';
 import { AgentBadge, StatusPill, Donut } from '../components';
 import { MOCK } from '../data/mock';
 import type { Collection, CollectionDetail } from '@financeos/shared';
+import { CsvImport } from '../components/CsvImport';
 import { fetchCollections, fetchCollection, sendCollection } from '../api/client';
 
 interface Props { toast: (title: string, sub: string, tone?: string) => void; }
@@ -67,7 +68,7 @@ export function Collections({ toast }: Props) {
                 <div className="card" style={{ overflow: 'hidden' }}>
                   <div className="card-h">
                     <h3><Icon name="phone" /> Overdue Accounts</h3>
-                    <span className="eyebrow">Risk-ranked by Collections Agent</span>
+                    <CsvImport kind="collections" templateKind="collections" label="overdue CSV" toast={toast} onDone={refresh} />
                   </div>
                   <div className="tbl-wrap">
                     <table className="tbl">

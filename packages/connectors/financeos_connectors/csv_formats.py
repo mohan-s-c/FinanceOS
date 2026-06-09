@@ -75,6 +75,17 @@ def parse_ar_open_invoices(text: str) -> list[dict]:
     return out
 
 
+def parse_overdue_accounts(text: str) -> list[dict]:
+    out = []
+    for r in _rows(text):
+        acct = (r.get("account") or "").strip()
+        if not acct:
+            continue
+        out.append({"account": acct, "loc": (r.get("loc") or "").strip(),
+                    "balance": _num(r.get("balance")), "days": int(_num(r.get("days")))})
+    return out
+
+
 def parse_ar_deposits(text: str) -> list[dict]:
     out = []
     for r in _rows(text):
@@ -100,6 +111,12 @@ TEMPLATES: dict[str, str] = {
         "AR-9001,Hertz Corporate Mobility,24600,40\n"
         "AR-9002,Hertz Corporate Mobility,18200,30\n"
         "AR-9003,Northwind Hotels,26800,25\n"
+    ),
+    "collections": (
+        "account,loc,balance,days\n"
+        "Lattice Logistics,DFW-Lot-E,48200,62\n"
+        "Cobalt Retail Group,PHX-Garage-A,31450,47\n"
+        "Harborview Medical,BOS-Garage-C,14300,22\n"
     ),
     "ar-deposits": (
         "deposit_id,payer,amount,customer,remittance\n"

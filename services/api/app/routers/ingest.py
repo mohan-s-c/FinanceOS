@@ -9,10 +9,11 @@ from fastapi.responses import PlainTextResponse
 
 from .. import connectors, repo
 from financeos_connectors.csv_formats import (
-    DEFAULT_POLICIES, TEMPLATES, parse_ap_invoices, parse_ar_deposits, parse_ar_open_invoices,
+    DEFAULT_POLICIES, TEMPLATES, parse_ap_invoices, parse_ar_deposits, parse_ar_open_invoices, parse_overdue_accounts,
 )
 from financeos_agents.ap_matching import generate_exceptions_from
 from financeos_agents.cash_application import generate_deposits_from
+from financeos_agents.collections import generate_collections_from
 
 router = APIRouter(prefix="/api/ingest", tags=["ingest"])
 
@@ -57,3 +58,12 @@ async def ingest_ar_deposits(request: Request) -> dict:
     repo.replace_deposits(recs)
     _, count = repo.unapplied_summary()
     return {"kind": "ar-deposits", "ingested": len(deposits), "unappliedCount": count}
+
+
+@router.post("/collections")
+async def ingest_collections(request: Request) -> dict:
+    """SIDE-EFFECTFUL: replace the collections queue from an uploaded overdue-accounts CSV."""
+    accounts = parse_overdue_accounts(await _body(request))
+    recs = generate_collections_from(accounts, suggest_only=True)
+    repo.replace_collections(recs)
+    return {"kind": "collections", "ingested": len(accounts)}

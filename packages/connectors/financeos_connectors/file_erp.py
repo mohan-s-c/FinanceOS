@@ -56,7 +56,8 @@ class FileERPConnector(ERPConnector):
         return F.parse_ar_open_invoices(text) if text is not None else _seed.seed_ar_invoices()
 
     def list_overdue_accounts(self) -> list[dict]:
-        return _seed.seed_overdue_accounts()
+        text = _read(self.data_dir, "overdue_accounts.csv")
+        return F.parse_overdue_accounts(text) if text is not None else _seed.seed_overdue_accounts()
 
     def list_anomaly_signals(self) -> list[dict]:
         return _seed.seed_anomaly_signals()

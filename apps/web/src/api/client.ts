@@ -162,7 +162,7 @@ export async function fetchAnalytics(): Promise<AnalyticsResp | null> {
 
 
 /** Upload a CSV (raw text/csv body) to an ingest endpoint; returns the result JSON. */
-export async function ingestCsv(kind: "ap" | "ar-invoices" | "ar-deposits", csv: string): Promise<{ ingested: number } | null> {
+export async function ingestCsv(kind: "ap" | "ar-invoices" | "ar-deposits" | "collections", csv: string): Promise<{ ingested: number } | null> {
   try {
     const headers: Record<string, string> = { "Content-Type": "text/csv" };
     if (_token) headers["Authorization"] = `Bearer ${_token}`;

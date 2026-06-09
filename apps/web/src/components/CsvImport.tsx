@@ -3,7 +3,7 @@ import { Icon } from './Icon';
 import { ingestCsv, fetchTemplate } from '../api/client';
 
 interface Props {
-  kind: 'ap' | 'ar-invoices' | 'ar-deposits';
+  kind: 'ap' | 'ar-invoices' | 'ar-deposits' | 'collections';
   templateKind: string;
   label: string;
   toast: (title: string, sub: string, tone?: string) => void;

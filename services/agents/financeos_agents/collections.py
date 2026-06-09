@@ -43,8 +43,12 @@ def score_account(acct: dict) -> dict:
 
 
 def generate_collections(erp, suggest_only: bool = True) -> list[dict]:
+    return generate_collections_from(erp.list_overdue_accounts(), suggest_only)
+
+
+def generate_collections_from(accounts: list[dict], suggest_only: bool = True) -> list[dict]:
     out: list[dict] = []
-    for a in erp.list_overdue_accounts():
+    for a in accounts:
         s = score_account(a)
         out.append({
             "id": _slug(a["account"]), "account": a["account"], "loc": a["loc"],
