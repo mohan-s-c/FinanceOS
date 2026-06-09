@@ -70,6 +70,10 @@ def init_db() -> None:
               risk INTEGER,
               payload TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS datasets (
+              key TEXT PRIMARY KEY,
+              payload TEXT NOT NULL
+            );
             """
         )
 

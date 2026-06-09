@@ -3,6 +3,7 @@ import { Icon } from '../components/Icon';
 import { ConfidenceRing, ConfidenceBar, AgentBadge, StatusPill } from '../components';
 import type { Deposit, DepositDetail } from '@financeos/shared';
 import { fetchDeposits, fetchDeposit, applyDeposit } from '../api/client';
+import { CsvImport } from '../components/CsvImport';
 
 interface Props { toast: (title: string, sub: string, tone?: string) => void; }
 
@@ -55,7 +56,10 @@ export function CashApplication({ toast }: Props) {
           <div className="card" style={{ overflow: 'hidden' }}>
             <div className="card-h">
               <h3><Icon name="coins" /> Matched Payments</h3>
-              <span className="eyebrow">Agent-computed · click a row to review</span>
+              <div className="hstack" style={{ gap: 8 }}>
+                <CsvImport kind="ar-invoices" templateKind="ar-invoices" label="open invoices" toast={toast} onDone={refresh} />
+                <CsvImport kind="ar-deposits" templateKind="ar-deposits" label="deposits" toast={toast} onDone={refresh} />
+              </div>
             </div>
             <div className="tbl-wrap">
               <table className="tbl">

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useStore } from '../store/useStore';
+import { CsvImport } from '../components/CsvImport';
 import { Icon } from '../components/Icon';
 import { ConfidenceRing, AgentBadge, SourceChip, StatusPill } from '../components';
 import type { Exception } from '../data/mock';
@@ -13,6 +15,7 @@ interface Props {
 
 export function Exceptions({ rows, selectedId, onSelect, onResolve, openCount }: Props) {
   const sel = rows.find((r) => r.id === selectedId) || null;
+  const { addToast, loadExceptions } = useStore();
   const [filter, setFilter] = useState<'all'|'bad'|'warn'>('all');
 
   const filtered = rows.filter((r) => filter === 'all' ? true : r.tone === filter);
@@ -42,8 +45,8 @@ export function Exceptions({ rows, selectedId, onSelect, onResolve, openCount }:
                 ))}
               </div>
               <div className="hstack" style={{ gap: 8 }}>
+                <CsvImport kind="ap" templateKind="ap" label="AP CSV" toast={addToast} onDone={loadExceptions} />
                 <button className="btn btn-quiet btn-sm"><Icon name="filter" size={14} /> Filter</button>
-                <button className="btn btn-quiet btn-sm"><Icon name="download" size={14} /> Export</button>
               </div>
             </div>
             <div className="tbl-wrap">

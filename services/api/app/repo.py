@@ -207,3 +207,39 @@ def apply_auto_actions(agent_id: str, threshold: int | None = None) -> int:
                                    "outcome": "auto", "src": ", ".join(s["inv"] for s in d.get("suggestions", [])), "by": None})
                     acted += 1
     return acted
+
+
+# ---- ingestion: replace read tables + datasets ----
+def replace_exceptions(records: list[dict]) -> None:
+    with session() as c:
+        c.execute("DELETE FROM exceptions")
+        for e in records:
+            state = "resolved" if e.get("status") == "Auto-approved" else "open"
+            c.execute("INSERT OR REPLACE INTO exceptions (id, state, resolution, amount, payload) VALUES (?,?,?,?,?)",
+                      (e["id"], state, "approved" if state == "resolved" else None, e["amount"], json.dumps(e)))
+        _add_audit(c, {"time": time.strftime("%H:%M:%S"), "agent": "AP Matching Agent",
+                       "action": f"Imported {len(records)} AP invoices (CSV)", "conf": 0,
+                       "outcome": "config", "src": "Ingest", "by": "D. Okafor"})
+
+
+def replace_deposits(records: list[dict]) -> None:
+    with session() as c:
+        c.execute("DELETE FROM deposits")
+        for d in records:
+            state = "applied" if d.get("status") == "Auto-applied" else "unapplied"
+            c.execute("INSERT OR REPLACE INTO deposits (id, state, amount, payload) VALUES (?,?,?,?)",
+                      (d["id"], state, d["amountValue"], json.dumps(d)))
+        _add_audit(c, {"time": time.strftime("%H:%M:%S"), "agent": "Cash Application Agent",
+                       "action": f"Imported {len(records)} deposits (CSV)", "conf": 0,
+                       "outcome": "config", "src": "Ingest", "by": "D. Okafor"})
+
+
+def set_dataset(key: str, obj) -> None:
+    with session() as c:
+        c.execute("INSERT OR REPLACE INTO datasets (key, payload) VALUES (?,?)", (key, json.dumps(obj)))
+
+
+def get_dataset(key: str):
+    with session() as c:
+        row = c.execute("SELECT payload FROM datasets WHERE key=?", (key,)).fetchone()
+    return json.loads(row["payload"]) if row else None

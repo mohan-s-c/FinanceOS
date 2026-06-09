@@ -33,11 +33,13 @@ def _exception_from(inv: dict, r: dict, status: str) -> dict:
 
 def generate_exceptions(erp, suggest_only: bool = True, threshold: int = 85) -> list[dict]:
     """Run the agent over the ERP's open AP invoices; return Exception records."""
-    docs = erp.list_ap_documents()
-    policies = erp.policies()
-    paid = erp.paid_invoices()
-    gate = ThresholdGate(agent=AGENT_NAME, threshold=threshold, suggest_only=suggest_only)
+    return generate_exceptions_from(erp.list_ap_documents(), erp.policies(), erp.paid_invoices(), suggest_only, threshold)
 
+
+def generate_exceptions_from(docs: list[dict], policies: dict, paid: list[dict],
+                             suggest_only: bool = True, threshold: int = 85) -> list[dict]:
+    """Same pipeline, but over explicitly-provided data (e.g. an uploaded CSV)."""
+    gate = ThresholdGate(agent=AGENT_NAME, threshold=threshold, suggest_only=suggest_only)
     out: list[dict] = []
     for d in docs:
         inv = d["invoice"]

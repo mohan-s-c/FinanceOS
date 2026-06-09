@@ -1,0 +1,5 @@
+invoice_id,vendor,vinit,location,date,terms,po_ref,amount,tax,po_total,variance_ceiling,gr_status,contract_ref,tax_exempt,lease_ref,dup_of,dup_similarity
+INV-5001,Sparkle Facilities,SF,SFO-Terminal-2,Jun 02 2026,Net 30,PO-5001,8420,0,7520,0.05,received,C-2024-0142,false,,,
+INV-5002,SecureGuard Inc,SG,Multiple,Jun 02 2026,Net 45,,15200,0,,0.05,partial,,false,,,
+INV-5003,Cardinal HVAC,CH,ORD-Garage-A,Jun 03 2026,Net 30,PO-5003,4200,0,4200,0.05,received,,false,,,
+INV-5004,Acme Janitorial,AJ,ORD-Garage-B,Jun 03 2026,Net 30,PO-5004,3180,0,3180,0.05,received,,false,,INV-4460,98

@@ -9,6 +9,7 @@ vendor adapter here and nothing else in the API changes.
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -25,9 +26,19 @@ from financeos_connectors import (  # noqa: E402
     MockERPConnector,
     MockBankConnector,
     MockIngestionConnector,
+    FileERPConnector,
+    FileBankConnector,
 )
 
-# Singletons for the process lifetime (Phase 0 = in-memory state).
-erp: ERPConnector = MockERPConnector()
-bank = MockBankConnector()
+# Adapter selection (the swappable seam). FINANCEOS_ERP=file boots from CSVs in
+# FINANCEOS_DATA_DIR (default infra/data); otherwise the in-memory mock is used.
+_VENDOR = os.getenv("FINANCEOS_ERP", "mock").lower()
+_DATA_DIR = os.getenv("FINANCEOS_DATA_DIR", str(_REPO_ROOT / "infra" / "data"))
+
+if _VENDOR == "file":
+    erp: ERPConnector = FileERPConnector(_DATA_DIR)
+    bank = FileBankConnector(_DATA_DIR)
+else:
+    erp = MockERPConnector()
+    bank = MockBankConnector()
 ingestion = MockIngestionConnector()

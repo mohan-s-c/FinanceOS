@@ -159,3 +159,20 @@ export async function fetchAnomalies(): Promise<AnomalyList | null> {
 export async function fetchAnalytics(): Promise<AnalyticsResp | null> {
   try { return await http<AnalyticsResp>("/api/analytics"); } catch { return null; }
 }
+
+
+/** Upload a CSV (raw text/csv body) to an ingest endpoint; returns the result JSON. */
+export async function ingestCsv(kind: "ap" | "ar-invoices" | "ar-deposits", csv: string): Promise<{ ingested: number } | null> {
+  try {
+    const headers: Record<string, string> = { "Content-Type": "text/csv" };
+    if (_token) headers["Authorization"] = `Bearer ${_token}`;
+    const res = await fetch(`${BASE}/api/ingest/${kind}`, { method: "POST", headers, body: csv });
+    return res.ok ? await res.json() : null;
+  } catch { return null; }
+}
+
+/** Fetch a CSV template's text (for download). */
+export async function fetchTemplate(kind: string): Promise<string | null> {
+  try { const res = await fetch(`${BASE}/api/ingest/template/${kind}`); return res.ok ? await res.text() : null; }
+  catch { return null; }
+}

@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
 from .config import settings
-from .routers import agents, analytics, anomalies, auth, collections, deposits, exceptions, health
+from .routers import agents, analytics, anomalies, auth, collections, deposits, exceptions, health, ingest
 
 app = FastAPI(
     title="Finance OS / APAR API",
@@ -29,6 +29,7 @@ app.include_router(deposits.router)
 app.include_router(collections.router)
 app.include_router(anomalies.router)
 app.include_router(analytics.router)
+app.include_router(ingest.router)
 
 
 @app.on_event("startup")

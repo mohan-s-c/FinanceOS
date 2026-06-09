@@ -1,0 +1,4 @@
+deposit_id,payer,amount,customer,remittance
+DEP-5001,JPMorgan ACH batch,42800,Hertz Corporate Mobility,AR-9001;AR-9002
+DEP-5002,Wells Fargo wire,26800,,
+DEP-5003,ACH — unidentified,18900,,

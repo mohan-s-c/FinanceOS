@@ -14,10 +14,12 @@ AGENT_NAME = "Cash Application Agent"
 
 
 def generate_deposits(erp, bank, suggest_only: bool = True, threshold: int = 90) -> list[dict]:
-    deposits = bank.list_raw_deposits()
-    open_ar = erp.list_open_ar_invoices()
-    gate = ThresholdGate(agent=AGENT_NAME, threshold=threshold, suggest_only=suggest_only)
+    return generate_deposits_from(bank.list_raw_deposits(), erp.list_open_ar_invoices(), suggest_only, threshold)
 
+
+def generate_deposits_from(deposits: list[dict], open_ar: list[dict],
+                           suggest_only: bool = True, threshold: int = 90) -> list[dict]:
+    gate = ThresholdGate(agent=AGENT_NAME, threshold=threshold, suggest_only=suggest_only)
     out: list[dict] = []
     for dep in deposits:
         r = match_deposit(dep, open_ar)
