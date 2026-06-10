@@ -40,7 +40,7 @@ def resolve_exception(exception_id: str, req: ResolveRequest, user: dict = Depen
         raise HTTPException(status_code=422, detail=str(exc))
 
 
-@router.get("/exceptions/{exception_id}/explain", response_model=ExceptionExplanation)
+@router.post("/exceptions/{exception_id}/explain", response_model=ExceptionExplanation)
 def explain_exception(exception_id: str, user: dict = Depends(auth.current_user)) -> ExceptionExplanation:
     """LLM-assisted (or offline-narrator) explanation + suggested disposition.
     Each explanation is written to the audit trail with the model that produced it."""

@@ -180,5 +180,5 @@ export async function fetchTemplate(kind: string): Promise<string | null> {
 
 /** LLM-assisted (or offline-narrator) explanation for an exception. */
 export async function fetchExplanation(id: string): Promise<ExceptionExplanation | null> {
-  try { return await http<ExceptionExplanation>(`/api/exceptions/${id}/explain`); } catch { return null; }
+  try { return await http<ExceptionExplanation>(`/api/exceptions/${id}/explain`, { method: "POST" }); } catch { return null; }
 }
