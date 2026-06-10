@@ -66,3 +66,22 @@ These are open questions to resolve at the start of V2, informed by where V1 lef
 2. Copy this `V1_HANDOFF.md` into that folder.
 3. If V2 should build on the V1 codebase, also copy the `src/` tree (or the whole repo minus `node_modules`/`dist`); if it's a clean rebuild, keep just this doc + `src/data/mock.ts` as the schema reference.
 4. In the first V2 message, tell me to read `V1_HANDOFF.md` so I pick up context without inheriting V1's chat.
+
+---
+
+## Looking ahead to V3 — Supervisor / agent control plane
+
+> Added after V2 shipped. This is the forward-pointer for whoever picks up the project next.
+
+**Where V2 landed.** All seven screens run on live, persisted, agent-computed data. The agent layer (deterministic 3-way match, cash match, collections risk scoring, anomaly detection) acts under per-agent confidence thresholds with a global kill switch, RBAC + segregation of duties, an immutable audit trail, CSV/ERP ingestion, and an LLM that *explains* gray-area exceptions (local Ollama/Qwen by default, data-minimized). The product can be deployed as a single service (see `DEPLOY.md`).
+
+**The governance gap V2 leaves.** V2 gates each *action*, but nothing watches the *agents themselves*. Thresholds are static and human-tuned; there is no detection of agent degradation, drift, or rogue/out-of-envelope actions, and no automatic intervention. The Anomaly agent watches the ledger, not the agents. A human has to notice.
+
+**V3 — the Supervisor / agent control plane.** A deterministic control plane that monitors each agent (override rate, confidence drift, volume, error/latency, envelope conformance), trips a circuit breaker to demote a misbehaving agent to suggest-only, gates out-of-envelope actions, and pages a human — with all actions audited and autonomy only ever *restored* by a Controller. The guardrail is rule-based, never an autonomous LLM, so it can't itself go rogue. Full design, data model, APIs, and phased plan are in **`V3_TECH_SPEC.md`**.
+
+**Two complementary V3 tracks** (see also the manual's roadmap):
+
+1. **Supervisor / control plane** — the *guardrail* half (this spec).
+2. **Closed-loop learning from analyst decisions** — the *improvement* half: use the override signal to auto-tune thresholds and refine the match/risk models so the touchless rate climbs on its own.
+
+**How to bootstrap V3 cleanly.** Same pattern as the V1→V2 handoff: start the next conversation pointed at this repo, tell me to read `CLAUDE.md`, `V2_DESIGN_SPEC.md`, and `V3_TECH_SPEC.md`, and begin at V3 phase P1 (observe-only telemetry on the Agents console) before enabling any enforcement.
