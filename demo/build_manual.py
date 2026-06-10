@@ -262,7 +262,9 @@ story += [Spacer(1, 12), Paragraph("Appendix C \u00b7 Project files &amp; layout
 rootfiles = [
  ["CLAUDE.md", "The standing &lsquo;how to work here&rsquo; brief: what the project is, the stack, conventions, guardrails, and the phase-by-phase status. Read first in any session."],
  ["V2_DESIGN_SPEC.md", "The V2 architecture and roadmap &mdash; the target layout, the agent/threshold model, and the phased plan this build follows."],
- ["V1_HANDOFF.md", "Snapshot of where the V1 prototype left off (the front-end-only mock app), carried over as context for the extend."],
+ ["V1_HANDOFF.md", "Snapshot of where the V1 prototype left off (the front-end-only mock app) \u2014 the V1\u2192V2 handoff."],
+ ["V2_HANDOFF.md", "Snapshot of where V2 landed and the context for V3 \u2014 the V2\u2192V3 handoff."],
+ ["V3_TECH_SPEC.md", "Proposed V3: the Supervisor / agent control plane \u2014 goals, what it monitors, circuit-breaker design, data model, and phased plan."],
  ["README.md", "How to install and run the project (front-end and back-end), for a new developer."],
  ["SECURITY.md", "The security review &mdash; what&rsquo;s hardened (RBAC, immutable audit, parameterized SQL, secrets, CORS) vs. deferred, plus the connector vendor-swap guide."],
  ["CHANGELOG.md", "Human-readable log of what changed across the phases."],
