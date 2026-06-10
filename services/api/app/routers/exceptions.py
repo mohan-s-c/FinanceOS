@@ -1,7 +1,9 @@
 """Exception Queue read models + the resolve command (Phase 0)."""
+import time
+
 from fastapi import APIRouter, Depends, HTTPException
 
-from .. import auth, store as _store
+from .. import auth, repo, store as _store
 from ..config import settings
 
 from .. import store
@@ -39,11 +41,19 @@ def resolve_exception(exception_id: str, req: ResolveRequest, user: dict = Depen
 
 
 @router.get("/exceptions/{exception_id}/explain", response_model=ExceptionExplanation)
-def explain_exception(exception_id: str) -> ExceptionExplanation:
-    """LLM-assisted (or offline-narrator) explanation + suggested disposition."""
+def explain_exception(exception_id: str, user: dict = Depends(auth.current_user)) -> ExceptionExplanation:
+    """LLM-assisted (or offline-narrator) explanation + suggested disposition.
+    Each explanation is written to the audit trail with the model that produced it."""
     e = store.explain_exception(exception_id)
     if e is None:
         raise HTTPException(status_code=404, detail=f"exception {exception_id} not found")
+    ex = store.get_exception(exception_id)
+    repo.record_audit({
+        "time": time.strftime("%H:%M:%S"), "agent": "Reasoning Agent",
+        "action": f"AI explanation for {exception_id} — suggested: {e.suggestedAction}",
+        "conf": ex.confidence if ex else 0, "outcome": "explain", "src": e.model,
+        "by": user["name"],
+    })
     return e
 
 

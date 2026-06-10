@@ -44,7 +44,7 @@ export function Audit({ toast }: Props) {
                     <td><span className="t-amt" style={{ color: confColor(r.conf) }}>{r.conf}%</span></td>
                     <td>
                       <StatusPill tone={r.outcome === 'auto' || r.outcome === 'human_resolved' ? 'ok' : r.outcome === 'escalated' ? 'warn' : 'agent'}>
-                        {r.outcome === 'auto' ? 'Auto-executed' : r.outcome === 'escalated' ? 'Escalated' : r.outcome === 'human_resolved' ? 'Resolved' : r.outcome === 'config' ? 'Config' : 'Overridden'}
+                        {r.outcome === 'auto' ? 'Auto-executed' : r.outcome === 'escalated' ? 'Escalated' : r.outcome === 'human_resolved' ? 'Resolved' : r.outcome === 'config' ? 'Config' : r.outcome === 'explain' ? 'Explained' : 'Overridden'}
                       </StatusPill>
                     </td>
                     <td><span className="mono" style={{ fontSize: 11, color: 'var(--tx-3)' }}>{r.src}</span></td>

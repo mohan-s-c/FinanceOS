@@ -97,9 +97,42 @@ class AnthropicProvider:
         return "".join(b.get("text", "") for b in data.get("content", [])).strip()
 
 
+class OllamaProvider:
+    """Local, self-hosted models via Ollama (or any OpenAI-compatible runner like vLLM/TGI
+    pointed at /api/chat). Data never leaves your infrastructure. temperature=0 for
+    repeatable, audit-friendly output."""
+    name = "ollama"
+
+    def __init__(self, host: str, model: str) -> None:
+        self.host = host.rstrip("/")
+        self.model = model
+        self.name = f"ollama:{model}"
+
+    def explain(self, ex: dict) -> str:
+        body = json.dumps({
+            "model": self.model, "stream": False, "options": {"temperature": 0},
+            "messages": [{"role": "system", "content": SYSTEM},
+                         {"role": "user", "content": json.dumps(_facts(ex))}],
+        }).encode()
+        req = urllib.request.Request(f"{self.host}/api/chat", data=body, headers={"content-type": "application/json"})
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode())
+        return (data.get("message", {}).get("content", "") or "").strip()
+
+
 def get_provider():
-    """OfflineNarrator unless LLM_API_KEY is set (then a real Anthropic model)."""
-    key = os.getenv("LLM_API_KEY")
-    if key:
+    """Pick a provider. LLM_PROVIDER selects explicitly; otherwise LLM_API_KEY implies
+    anthropic, else the dependency-free offline narrator.
+
+    - LLM_PROVIDER=ollama  -> OllamaProvider(OLLAMA_HOST, OLLAMA_MODEL)  [local / self-hosted]
+    - LLM_PROVIDER=anthropic (or LLM_API_KEY set) -> AnthropicProvider(LLM_MODEL)
+    - otherwise -> OfflineNarrator
+    """
+    provider = os.getenv("LLM_PROVIDER", "").lower()
+    if provider == "ollama":
+        return OllamaProvider(os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+                              os.getenv("OLLAMA_MODEL", "qwen2.5"))
+    if provider == "anthropic" or os.getenv("LLM_API_KEY"):
+        key = os.getenv("LLM_API_KEY", "")
         return AnthropicProvider(key, os.getenv("LLM_MODEL", "claude-haiku-4-5-20251001"))
     return OfflineNarrator()

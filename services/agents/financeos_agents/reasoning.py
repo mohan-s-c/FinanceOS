@@ -1,7 +1,7 @@
 """LLM-assisted exception reasoning. Wraps the provider and packages a result."""
 from __future__ import annotations
 
-from .llm import get_provider
+from .llm import get_provider, OfflineNarrator
 
 _ACTION = {
     "approve": "Approve", "reject": "Reject", "escalate": "Escalate for review",
@@ -11,12 +11,20 @@ _ACTION = {
 
 def explain_exception(ex: dict) -> dict:
     provider = get_provider()
-    narrative = provider.explain(ex)
+    model = getattr(provider, "name", "offline-narrator")
+    try:
+        narrative = provider.explain(ex)
+        if not narrative.strip():
+            raise ValueError("empty response")
+    except Exception:
+        # Local model down / unreachable -> never fail the request; fall back to offline.
+        narrative = OfflineNarrator().explain(ex)
+        model = f"{model} (unavailable -> offline)"
     rec = ex.get("recommendation", "escalate")
     return {
         "id": ex.get("id"),
         "narrative": narrative,
         "suggestedAction": _ACTION.get(rec, "Escalate for review"),
-        "model": getattr(provider, "name", "offline-narrator"),
+        "model": model,
         "grounded": ex.get("sources", []),
     }
